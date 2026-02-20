@@ -1,0 +1,346 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: #faf6f1;
+    color: #3a2e28;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+/* Header */
+header {
+    background: linear-gradient(135deg, #5c1a08 0%, #8b3a1a 50%, #5c1a08 100%);
+    padding: 1rem 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 2px 12px rgba(92, 26, 8, 0.3);
+}
+
+header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #f5c842 50%, transparent);
+}
+
+header h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #fde8a0;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+header .phone {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+header .phone a {
+    color: #fde8a0;
+    text-decoration: none;
+    padding: 0.4rem 1rem;
+    border: 1px solid #fde8a055;
+    border-radius: 20px;
+    transition: all 0.2s;
+}
+
+header .phone a:hover {
+    background: #fde8a020;
+    border-color: #fde8a0;
+}
+
+/* Main layout — 50/50 */
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: calc(100vh - 68px);
+}
+
+/* Menu panel */
+.menu-panel {
+    background: #fff;
+    border-right: 1px solid #e8ddd4;
+    overflow-y: auto;
+    padding: 1.5rem 2rem;
+}
+
+.menu-panel::-webkit-scrollbar { width: 6px; }
+.menu-panel::-webkit-scrollbar-track { background: transparent; }
+.menu-panel::-webkit-scrollbar-thumb { background: #d4c4b5; border-radius: 3px; }
+
+.menu-panel h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #8b3a1a;
+    margin-bottom: 0.3rem;
+    letter-spacing: 0.5px;
+}
+
+.menu-note {
+    font-size: 0.78rem;
+    color: #a0917f;
+    margin-bottom: 1.2rem;
+    font-style: italic;
+}
+
+.menu-category h3 {
+    font-size: 0.75rem;
+    color: #8b3a1a;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    margin-top: 1.2rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid #ece3d8;
+}
+
+.menu-category:first-child h3 { margin-top: 0; }
+
+.pizza-item {
+    padding: 0.45rem 0;
+    display: grid;
+    grid-template-columns: 2.2rem 1fr auto;
+    gap: 0.4rem;
+    align-items: baseline;
+    transition: background 0.15s;
+    border-radius: 4px;
+    padding-left: 0.3rem;
+    padding-right: 0.3rem;
+}
+
+.pizza-item:hover {
+    background: none;
+}
+
+.pizza-nr {
+    color: #c0392b;
+    font-weight: 700;
+    font-size: 0.85rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.pizza-name {
+    font-weight: 600;
+    color: #3a2e28;
+    font-size: 0.88rem;
+}
+
+.pizza-desc {
+    font-size: 0.75rem;
+    color: #a0917f;
+    grid-column: 2;
+    line-height: 1.3;
+}
+
+.pizza-price {
+    color: #8b3a1a;
+    font-weight: 700;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Orders panel */
+.orders-panel {
+    padding: 1.5rem 2rem;
+    overflow-y: auto;
+    background: #f5efe8;
+}
+
+.orders-panel::-webkit-scrollbar { width: 6px; }
+.orders-panel::-webkit-scrollbar-track { background: transparent; }
+.orders-panel::-webkit-scrollbar-thumb { background: #d4c4b5; border-radius: 3px; }
+
+.orders-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.2rem;
+}
+
+.orders-panel h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #8b3a1a;
+    margin-bottom: 0;
+    letter-spacing: 0.5px;
+}
+
+.filters {
+    display: flex;
+    gap: 0.3rem;
+    background: #fff;
+    padding: 0.2rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.filter-btn {
+    background: none;
+    border: none;
+    color: #a0917f;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.35rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.filter-btn:hover { color: #6b5a4d; }
+.filter-btn.active { background: #8b3a1a; color: #fff; }
+
+.no-orders {
+    text-align: center;
+    color: #b8a99a;
+    padding: 4rem 2rem;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.no-orders .icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 1rem;
+    opacity: 0.4;
+}
+
+/* Order cards */
+.order-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.2rem 1.4rem;
+    margin-bottom: 0.8rem;
+    border-left: 4px solid #d4c4b5;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.order-card:hover {
+    transform: translateX(2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+.order-card.status-new    { border-left-color: #3498db; }
+.order-card.status-oven   { border-left-color: #e67e22; background: #fffcf5; }
+.order-card.status-ready  { border-left-color: #2ecc71; background: #f5fff8; }
+.order-card.status-picked { border-left-color: #bbb; opacity: 0.6; }
+.order-card.status-change { border-left-color: #f39c12; background: #fffdf0; }
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.7rem;
+}
+
+.order-id {
+    font-weight: 700;
+    color: #3a2e28;
+    font-size: 1.05rem;
+}
+
+.order-id .nr { color: #8b3a1a; }
+
+.order-status {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.7rem;
+    border-radius: 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.order-status.new    { background: #3498db; color: #fff; }
+.order-status.oven   { background: #e67e22; color: #fff; animation: pulse 2s infinite; }
+.order-status.ready  { background: #2ecc71; color: #fff; }
+.order-status.picked { background: #bbb; color: #fff; }
+.order-status.change { background: #f39c12; color: #fff; animation: pulse 1.5s infinite; }
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.order-items {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: #3a2e28;
+    font-weight: 500;
+}
+
+.order-meta {
+    font-size: 0.78rem;
+    color: #a0917f;
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 0.8rem;
+}
+
+.order-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.order-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.order-actions button {
+    padding: 0.5rem 1.2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+}
+
+.order-actions button:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+.order-actions button:active { transform: translateY(0); }
+.order-actions button:disabled { opacity: 0.3; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.btn-oven   { background: linear-gradient(135deg, #e67e22, #d35400); color: #fff; }
+.btn-ready  { background: linear-gradient(135deg, #2ecc71, #27ae60); color: #fff; }
+.btn-picked { background: linear-gradient(135deg, #95a5a6, #7f8c8d); color: #fff; }
+.btn-change { background: linear-gradient(135deg, #f39c12, #e67e22); color: #fff; }
+.btn-cancel { background: none; border: 1px solid #d4c4b5 !important; color: #a0917f; font-weight: 500; }
+.btn-cancel:hover { border-color: #c0392b !important; color: #c0392b; background: #c0392b08; }
+
+/* Responsive */
+@media (max-width: 900px) {
+    .container {
+        grid-template-columns: 1fr;
+        grid-template-rows: 45vh 1fr;
+        height: calc(100vh - 68px);
+    }
+
+    .menu-panel {
+        border-right: none;
+        border-bottom: 1px solid #e8ddd4;
+    }
+
+    .orders-panel { overflow-y: auto; }
+
+    header { padding: 0.8rem 1.2rem; }
+    header h1 { font-size: 1.3rem; }
+    .menu-panel, .orders-panel { padding: 1rem 1.2rem; }
+}

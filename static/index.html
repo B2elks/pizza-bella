@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizzeria Bella</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<header>
+    <h1>Pizzeria Bella</h1>
+    <span class="phone"><a href="tel:+46766867485">076-686 74 85</a></span>
+</header>
+
+<div class="container">
+    <div class="menu-panel">
+        <h2>Meny</h2>
+        <p class="menu-note">Alla pizzor innehåller tomatsås &amp; ost. Glutenfri botten +25 kr.</p>
+        <div id="menu"></div>
+    </div>
+    <div class="orders-panel">
+        <div class="orders-header">
+            <h2>Beställningar</h2>
+            <div class="filters">
+                <button class="filter-btn active" data-filter="active" onclick="setFilter('active')">Att göra</button>
+                <button class="filter-btn" data-filter="ready" onclick="setFilter('ready')">Klara</button>
+                <button class="filter-btn" data-filter="all" onclick="setFilter('all')">Alla</button>
+            </div>
+        </div>
+        <div id="orders">
+            <div class="no-orders"><span class="icon">📋</span>Inga beställningar ännu<br>Ring och beställ!</div>
+        </div>
+    </div>
+</div>
+
+<script>
+const MENU = [
+    {nr:1, name:"Margareta", desc:"Ost", price:100, cat:"Standard"},
+    {nr:2, name:"Vesuvio", desc:"Skinka", price:100, cat:"Standard"},
+    {nr:3, name:"Paula", desc:"Champinjoner, köttfärssås", price:100, cat:"Standard"},
+    {nr:4, name:"Capricciosa", desc:"Skinka, champinjoner", price:100, cat:"Standard"},
+    {nr:5, name:"Altonno", desc:"Tonfisk", price:100, cat:"Standard"},
+    {nr:6, name:"Hawaii", desc:"Skinka, ananas", price:100, cat:"Standard"},
+    {nr:7, name:"Buruna", desc:"Champinjoner", price:100, cat:"Standard"},
+    {nr:8, name:"Bussola", desc:"Skinka, räkor", price:100, cat:"Standard"},
+    {nr:9, name:"Opera", desc:"Skinka, tonfisk", price:100, cat:"Standard"},
+    {nr:10, name:"Orientale", desc:"Köttfärssås", price:100, cat:"Standard"},
+    {nr:11, name:"Vera", desc:"Skinka, färska tomater", price:100, cat:"Standard"},
+    {nr:12, name:"Tropicana", desc:"Skinka, ananas, banan, curry", price:105, cat:"Standard"},
+    {nr:13, name:"Marinara", desc:"Räkor, musslor", price:105, cat:"Standard"},
+    {nr:14, name:"Gondola", desc:"Räkor, champinjoner", price:105, cat:"Standard"},
+    {nr:15, name:"Bussola Special", desc:"Skinka, räkor, ananas", price:105, cat:"Standard"},
+    {nr:16, name:"Campagnola", desc:"Salami, lök", price:105, cat:"Standard"},
+    {nr:17, name:"Balanzone", desc:"Skinka, salami", price:105, cat:"Standard"},
+    {nr:18, name:"Pazza", desc:"Räkor, champinjoner, paprika, lök", price:105, cat:"Standard"},
+    {nr:19, name:"Vegetale", desc:"Champinjoner, paprika, oliver, lök", price:105, cat:"Standard"},
+    {nr:20, name:"Vegetale Special", desc:"Champinjoner, fårost, paprika, oliver, lök", price:105, cat:"Standard"},
+    {nr:21, name:"Diabolo", desc:"Skinka, köttfärssås", price:105, cat:"Standard"},
+    {nr:22, name:"Primavera", desc:"Bacon, ägg, lök", price:105, cat:"Standard"},
+    {nr:23, name:"Romana", desc:"Skinka, champinjoner, räkor", price:105, cat:"Standard"},
+    {nr:24, name:"Orientale Special", desc:"Champinjoner, köttfärssås, ägg", price:105, cat:"Standard"},
+    {nr:25, name:"Rimini", desc:"Skinka, räkor, crab-fish", price:105, cat:"Standard"},
+    {nr:26, name:"Bolognese", desc:"Skinka, champinjoner, köttfärssås", price:105, cat:"Standard"},
+    {nr:27, name:"Venezia", desc:"Skinka, räkor, tonfisk", price:105, cat:"Standard"},
+    {nr:28, name:"Pronto", desc:"Skinka, fefferoni, lök", price:105, cat:"Standard"},
+    {nr:29, name:"Carbonara", desc:"Skinka, champinjoner, paprika, lök", price:105, cat:"Standard"},
+    {nr:30, name:"La Gonzola", desc:"Skinka, ädelost", price:105, cat:"Standard"},
+    {nr:31, name:"Calzone", desc:"Inbakad, skinka", price:110, cat:"Inbakad"},
+    {nr:32, name:"Calzone Special", desc:"Inbakad, skinka, räkor", price:110, cat:"Inbakad"},
+    {nr:33, name:"La Polarde", desc:"Inbakad, skinka, ädelost, crème fraiche", price:110, cat:"Inbakad"},
+    {nr:34, name:"Sorrento", desc:"Köttfärssås, lök, fefferoni, tomater, stark sås", price:115, cat:"Special"},
+    {nr:35, name:"Marco Polo", desc:"Skinka, räkor, champinjoner, tonfisk", price:115, cat:"Special"},
+    {nr:36, name:"Quattro Stagioni", desc:"Skinka, räkor, champinjoner, musslor, kronärtskocka", price:115, cat:"Special"},
+    {nr:37, name:"Las Vegas", desc:"Skinka, champinjoner, bacon, ägg, lök", price:115, cat:"Special"},
+    {nr:38, name:"Fantasia", desc:"Skinka, salami, bacon, lök", price:115, cat:"Special"},
+    {nr:39, name:"Maxhot", desc:"Stark korv, champinjoner, fefferoni, lök, stark sås", price:115, cat:"Special"},
+    {nr:40, name:"Frutti di Mare", desc:"Räkor, tonfisk, musslor, crab-fish", price:115, cat:"Special"},
+    {nr:41, name:"Mamma Mia", desc:"Köttfärssås, lök, fefferoni, bearnaisesås", price:115, cat:"Special"},
+    {nr:42, name:"La Casa", desc:"Skinka, räkor, champinjoner, köttfärssås", price:115, cat:"Special"},
+    {nr:43, name:"Caruso", desc:"Kebabkött, champinjoner, vitlök", price:115, cat:"Kebab"},
+    {nr:44, name:"Riviera", desc:"Kebabkött, champinjoner, tomater, fefferoni", price:115, cat:"Kebab"},
+    {nr:45, name:"San Remo", desc:"Kebabkött, tomater, stark sås", price:115, cat:"Kebab"},
+    {nr:46, name:"Bella", desc:"Kebabkött, svamp, vitlök, bearnaise, fefferoni", price:115, cat:"Kebab"},
+    {nr:47, name:"Verona", desc:"Kebabkött, lök, tomater, paprika, fefferoni", price:115, cat:"Kebab"},
+    {nr:48, name:"Regina", desc:"Kyckling, ananas, curry", price:115, cat:"Kyckling"},
+    {nr:49, name:"Ancona", desc:"Kyckling, banan, curry", price:115, cat:"Kyckling"},
+    {nr:50, name:"Blanca", desc:"Kyckling, bearnaisesås", price:115, cat:"Kyckling"},
+    {nr:51, name:"Udine", desc:"Kyckling, champinjoner, vitlök, bearnaisesås, fefferoni", price:115, cat:"Kyckling"},
+    {nr:52, name:"Roma", desc:"Fläskfilé, bearnaisesås", price:120, cat:"Fläskfilé"},
+    {nr:53, name:"Farma", desc:"Fläskfilé, champinjoner, lök, fefferoni", price:120, cat:"Fläskfilé"},
+    {nr:54, name:"La Luna", desc:"Fläskfilé, champinjoner, vitlök, bearnaisesås", price:120, cat:"Fläskfilé"},
+    {nr:55, name:"Napoli", desc:"Fläskfilé, bacon, ägg, champinjoner", price:120, cat:"Fläskfilé"},
+    {nr:56, name:"Ciao Ciao", desc:"Oxfilé, bearnaisesås", price:130, cat:"Oxfilé"},
+    {nr:57, name:"Madonna", desc:"Oxfilé, champinjoner, lök, fefferoni", price:130, cat:"Oxfilé"},
+    {nr:58, name:"Huset Special", desc:"Oxfilé, champinjoner, vitlök, bearnaisesås", price:130, cat:"Oxfilé"},
+    {nr:59, name:"Malaja", desc:"Oxfilé, lök, tomater, svartpeppar", price:130, cat:"Oxfilé"},
+    {nr:60, name:"La Bamba", desc:"Oxfilé, bacon, ägg, champinjoner, fefferoni", price:140, cat:"Oxfilé"},
+    {nr:61, name:"Bergmans Special", desc:"Oxfilé, köttfärssås, skinka, räkor, fefferoni, bearnaisesås", price:140, cat:"Oxfilé"},
+    {nr:62, name:"Ali Baba", desc:"Oxfilé, ädelost, färska tomater, bearnaisesås", price:140, cat:"Oxfilé"},
+    {nr:63, name:"Lady Diana", desc:"Oxfilé, skinka, lök, färska tomater, vitlök, bearnaisesås", price:140, cat:"Oxfilé"},
+    {nr:64, name:"Atlantic", desc:"Oxfilé, ädelost, lök, svamp, bearnaisesås", price:140, cat:"Oxfilé"},
+    {nr:65, name:"Dormiro", desc:"Oxfilé, svamp, banan, curry, bearnaisesås", price:140, cat:"Oxfilé"},
+    {nr:66, name:"Mexicana", desc:"Skinka, tomater, tacosås, taco kryddmix, jalapeño", price:115, cat:"Mexikansk"},
+    {nr:67, name:"Monterrey", desc:"Köttfärssås, tacosås, taco kryddmix, vitlök, stark sås", price:115, cat:"Mexikansk"},
+    {nr:68, name:"Sierra", desc:"Köttfärssås, champinjoner, jalapeño, taco kryddmix, bearnaisesås", price:115, cat:"Mexikansk"},
+    {nr:69, name:"Mérida", desc:"Kebab, fefferoni, jalapeño, taco kryddmix, bearnaisesås", price:115, cat:"Mexikansk"},
+    {nr:70, name:"Mexikansk Special", desc:"Kyckling, jalapeño, taco kryddmix, tacosås", price:115, cat:"Mexikansk"},
+    {nr:71, name:"Acapulco", desc:"Räkor, köttfärs, jalapeño, lök, tacosås, vitlökssås", price:115, cat:"Mexikansk"},
+];
+
+const CATEGORIES = ["Standard","Inbakad","Special","Kebab","Kyckling","Fläskfilé","Oxfilé","Mexikansk"];
+
+const STATUS_LABELS = {
+    new: "NY",
+    oven: "I UGNEN",
+    ready: "KLAR",
+    picked: "HÄMTAD",
+    change: "ÄNDRING",
+};
+
+function renderMenu() {
+    const el = document.getElementById("menu");
+    let html = "";
+    for (const cat of CATEGORIES) {
+        const pizzas = MENU.filter(p => p.cat === cat);
+        html += `<div class="menu-category"><h3>${cat}pizzor</h3>`;
+        html += pizzas.map(p => `
+            <div class="pizza-item">
+                <span class="pizza-nr">${p.nr}.</span>
+                <span class="pizza-name">${p.name}</span>
+                <span class="pizza-price">${p.price} kr</span>
+                <span class="pizza-desc">${p.desc}</span>
+            </div>
+        `).join("");
+        html += `</div>`;
+    }
+    el.innerHTML = html;
+}
+
+function renderOrders(orders) {
+    const el = document.getElementById("orders");
+    const filtered = filterOrders(orders);
+    if (!filtered.length) {
+        const msg = !orders.length ? "Inga beställningar ännu<br>Ring och beställ!" : "Inga ordrar med denna status";
+        el.innerHTML = `<div class="no-orders"><span class="icon">📋</span>${msg}</div>`;
+        return;
+    }
+    el.innerHTML = filtered.map(o => {
+        const items = o.items.map(i => `${i.qty}\u00d7 ${i.name}${i.glutenfri ? ' (GF)' : ''}`).join(", ");
+        const time = new Date(o.created_at).toLocaleTimeString("sv-SE", {hour:"2-digit", minute:"2-digit"});
+        const buttons = getButtons(o);
+        return `
+            <div class="order-card status-${o.status}">
+                <div class="order-header">
+                    <span class="order-id"><span class="nr">#${o.id}</span> ${o.customer_name}</span>
+                    <span class="order-status ${o.status}">${STATUS_LABELS[o.status] || o.status}</span>
+                </div>
+                <div class="order-items">${items}</div>
+                <div class="order-meta">
+                    <span>${o.total_price} kr</span>
+                    <span>${time}</span>
+                    ${o.customer_phone ? `<span>${o.customer_phone}</span>` : ''}
+                </div>
+                <div class="order-actions">${buttons}</div>
+            </div>
+        `;
+    }).join("");
+}
+
+function getButtons(order) {
+    const s = order.status;
+    const btns = [];
+    if (s === "new") {
+        btns.push(`<button class="btn-oven" onclick="updateOrder(this,${order.id},'oven')">I ugnen</button>`);
+    }
+    if (s === "new" || s === "oven") {
+        btns.push(`<button class="btn-ready" onclick="updateOrder(this,${order.id},'ready')">Klar att hämta</button>`);
+    }
+    if (s === "ready") {
+        btns.push(`<button class="btn-picked" onclick="updateOrder(this,${order.id},'picked')">Upphämtad</button>`);
+    }
+    if (s === "new" || s === "oven" || s === "change") {
+        btns.push(`<button class="btn-change" onclick="updateOrder(this,${order.id},'change')">Ändra order</button>`);
+    }
+    if (s !== "picked") {
+        btns.push(`<button class="btn-cancel" onclick="confirmCancel(this,${order.id})">Avbeställ</button>`);
+    }
+    return btns.join("");
+}
+
+let updating = false;
+async function updateOrder(btn, id, action) {
+    if (updating) return;
+    updating = true;
+    btn.disabled = true;
+    btn.textContent = "...";
+    try {
+        await fetch(`/api/orders/${id}/${action}`, {method: "POST"});
+        await fetchOrders();
+    } catch (e) {
+        console.error("Failed to update order:", e);
+    } finally {
+        updating = false;
+    }
+}
+
+function confirmCancel(btn, id) {
+    if (confirm("Vill du avbeställa denna order? Kunden får ett SMS.")) {
+        updateOrder(btn, id, "cancel");
+    }
+}
+
+let currentFilter = "active";
+let allOrders = [];
+
+function setFilter(f) {
+    currentFilter = f;
+    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+    document.querySelector(`[data-filter="${f}"]`).classList.add("active");
+    renderOrders(allOrders);
+}
+
+function filterOrders(orders) {
+    if (currentFilter === "active") return orders.filter(o => ["new","oven","change"].includes(o.status));
+    if (currentFilter === "ready") return orders.filter(o => o.status === "ready");
+    return orders;
+}
+
+async function fetchOrders() {
+    try {
+        const resp = await fetch("/api/orders");
+        allOrders = await resp.json();
+        renderOrders(allOrders);
+    } catch (e) {
+        console.error("Failed to fetch orders:", e);
+    }
+}
+
+renderMenu();
+fetchOrders();
+setInterval(fetchOrders, 3000);
+</script>
+
+</body>
+</html>

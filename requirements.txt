@@ -1,0 +1,5 @@
+websockets>=12,<14
+python-dotenv
+flask
+requests
+gunicorn

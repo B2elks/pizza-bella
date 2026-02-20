@@ -1,0 +1,14 @@
+[Unit]
+Description=Pizza Web Dashboard (Flask)
+After=network.target
+
+[Service]
+Type=simple
+User=kumamonwithme
+WorkingDirectory=/home/kumamonwithme/pizza
+ExecStart=/home/kumamonwithme/pizza/pizza-venv/bin/python web_app.py 8104
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

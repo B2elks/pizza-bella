@@ -1,0 +1,14 @@
+[Unit]
+Description=Pizza Voice Agent (OpenAI Realtime bridge)
+After=network.target
+
+[Service]
+Type=simple
+User=kumamonwithme
+WorkingDirectory=/home/kumamonwithme/pizza
+ExecStart=/home/kumamonwithme/pizza/pizza-venv/bin/python voice_agent.py 8103
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
