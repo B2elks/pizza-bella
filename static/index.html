@@ -3,244 +3,1224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pizzeria Bella</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <title>Pizzanummer.se &mdash; Ring och best&auml;ll pizza med AI | Demo av 46elks</title>
+    <meta name="description" content="Pizzanummer.se &auml;r en demo av 46elks r&ouml;st-API. Ring 076-686 77 77 och best&auml;ll pizza fr&aring;n Pizzeria Elken &mdash; en AI-r&ouml;stassistent tar din best&auml;llning. Bygg din egen l&ouml;sning med 46elks.">
+    <meta name="keywords" content="46elks, r&ouml;st-API, AI telefon, pizza best&auml;llning, r&ouml;stassistent, telefon-API, Sverige, demo">
+    <meta name="author" content="46elks AB">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://pizzanummer.se/">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://pizzanummer.se/">
+    <meta property="og:title" content="Pizzanummer.se &mdash; Ring och best&auml;ll pizza med AI">
+    <meta property="og:description" content="En demo av 46elks r&ouml;st-API. Ring 076-686 77 77 och prata med en AI som tar din pizzabest&auml;llning.">
+    <meta property="og:locale" content="sv_SE">
+    <meta property="og:site_name" content="Pizzanummer.se">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Pizzanummer.se &mdash; Ring och best&auml;ll pizza med AI">
+    <meta name="twitter:description" content="En demo av 46elks r&ouml;st-API. Ring och prata med en AI-r&ouml;stassistent.">
+    <meta name="geo.region" content="SE">
+    <meta name="geo.placename" content="Stockholm">
+    <meta name="geo.position" content="59.3293;18.0686">
+    <meta name="ICBM" content="59.3293, 18.0686">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "WebSite",
+                "name": "Pizzanummer.se",
+                "url": "https://pizzanummer.se/",
+                "inLanguage": "sv",
+                "description": "Ring och best\u00e4ll pizza med AI \u2014 en demo av 46elks r\u00f6st-API"
+            },
+            {
+                "@type": "Organization",
+                "name": "46elks AB",
+                "url": "https://46elks.com",
+                "sameAs": ["https://github.com/46elks","https://www.linkedin.com/company/46elks"]
+            },
+            {
+                "@type": "SoftwareApplication",
+                "name": "46elks API",
+                "applicationCategory": "CommunicationApplication",
+                "operatingSystem": "Web",
+                "offers": {"@type":"Offer","price":"0","priceCurrency":"SEK","description":"Gratis att skapa konto"},
+                "provider": {"@type":"Organization","name":"46elks AB"}
+            },
+            {
+                "@type": "HowTo",
+                "name": "S\u00e5 byggde vi pizzanummer.se",
+                "step": [
+                    {"@type":"HowToStep","position":1,"name":"Skapa 46elks-konto","text":"Registrera dig p\u00e5 46elks.com och f\u00e5 tillg\u00e5ng till API:et."},
+                    {"@type":"HowToStep","position":2,"name":"Koppla ett telefonnummer","text":"Allokera ett svenskt telefonnummer via API:et och peka det mot din WebSocket-server."},
+                    {"@type":"HowToStep","position":3,"name":"Bygg r\u00f6stlogiken","text":"Koppla 46elks r\u00f6st-API med OpenAI Realtime API f\u00f6r att skapa en AI-r\u00f6stassistent."}
+                ]
+            },
+            {
+                "@type": "FAQPage",
+                "mainEntity": [
+                    {"@type":"Question","name":"Vad \u00e4r pizzanummer.se?","acceptedAnswer":{"@type":"Answer","text":"Pizzanummer.se \u00e4r en teknisk demo som visar hur 46elks r\u00f6st-API kan anv\u00e4ndas f\u00f6r att bygga en AI-driven telefonbest\u00e4llning. Ring 076-686 77 77 f\u00f6r att testa."}},
+                    {"@type":"Question","name":"Vad \u00e4r 46elks?","acceptedAnswer":{"@type":"Answer","text":"46elks \u00e4r ett svenskt API f\u00f6r telefoni och SMS. Med n\u00e5gra rader kod kan du ringa samtal, skicka SMS och bygga r\u00f6stapplikationer."}},
+                    {"@type":"Question","name":"Kan jag bygga n\u00e5got liknande?","acceptedAnswer":{"@type":"Answer","text":"Ja! Skapa ett gratis konto p\u00e5 46elks.com och anv\u00e4nd r\u00f6st-API:et med WebSocket f\u00f6r att bygga din egen r\u00f6stassistent."}}
+                ]
+            }
+        ]
+    }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        .beta-banner{
+            background:linear-gradient(90deg,#f39c12,#e67e22);
+            color:#1a1410;
+            text-align:center;
+            padding:0.5rem 1rem;
+            font-family:'JetBrains Mono',monospace;
+            font-size:0.75rem;
+            font-weight:500;
+            line-height:1.5;
+            position:relative;
+            z-index:1001;
+        }
+        .beta-banner a{color:#1a1410;font-weight:700;text-decoration:underline}
+        .beta-tag{
+            display:inline-block;
+            background:#1a1410;
+            color:#f39c12;
+            font-size:0.6rem;
+            font-weight:800;
+            letter-spacing:2px;
+            padding:0.15rem 0.5rem;
+            border-radius:4px;
+            margin-right:0.5rem;
+            vertical-align:middle;
+        }
+        :root{
+            --bg:#faf8f5;--bg-dark:#1a1410;--text:#2a2118;--text-muted:#6b5a4d;
+            --accent:#8b3a1a;--accent-light:#c0592e;--gold:#fde8a0;--green:#2d6b3f;
+            --card-bg:#fff;--border:#e8ddd0;
+            --hover-bg:rgba(254,249,240,0.6);--btn-muted-bg:#f0ebe4;--nav-bg:rgba(250,248,245,0.92);
+            --status-new-bg:#e8f5e9;--status-new-color:#2d6b3f;
+            --status-oven-bg:#fff3e0;--status-oven-color:#e65100;
+            --status-ready-bg:#e8f5e9;--status-ready-color:#1b5e20;
+            --status-picked-bg:#f5f5f5;--status-picked-color:#9e9e9e;
+            --status-change-bg:#fff3e0;--status-change-color:#e65100;
+            --change-note-bg:#fff3e0;--change-note-border:#f39c12;--change-note-color:#e65100;
+        }
+        [data-theme="dark"]{
+            --bg:#0f0d0a;--bg-dark:#0a0806;--text:#e8ddd0;--text-muted:#a0917f;
+            --accent:#d4884d;--accent-light:#e8a060;--gold:#fde8a0;--green:#4caf50;
+            --card-bg:#1a1410;--border:#3a2e28;
+            --hover-bg:rgba(255,255,255,0.04);--btn-muted-bg:#2a2118;--nav-bg:rgba(15,13,10,0.92);
+            --status-new-bg:#1b3a1b;--status-new-color:#4caf50;
+            --status-oven-bg:#3a2200;--status-oven-color:#e67e22;
+            --status-ready-bg:#1b3a1b;--status-ready-color:#2ecc71;
+            --status-picked-bg:#1a1a1a;--status-picked-color:#777;
+            --status-change-bg:#3a2200;--status-change-color:#f39c12;
+            --change-note-bg:#3a2200;--change-note-border:#f39c12;--change-note-color:#f39c12;
+        }
+        @media(prefers-color-scheme:dark){
+            :root:not([data-theme="light"]){
+                --bg:#0f0d0a;--bg-dark:#0a0806;--text:#e8ddd0;--text-muted:#a0917f;
+                --accent:#d4884d;--accent-light:#e8a060;--gold:#fde8a0;--green:#4caf50;
+                --card-bg:#1a1410;--border:#3a2e28;
+                --hover-bg:rgba(255,255,255,0.04);--btn-muted-bg:#2a2118;--nav-bg:rgba(15,13,10,0.92);
+                --status-new-bg:#1b3a1b;--status-new-color:#4caf50;
+                --status-oven-bg:#3a2200;--status-oven-color:#e67e22;
+                --status-ready-bg:#1b3a1b;--status-ready-color:#2ecc71;
+                --status-picked-bg:#1a1a1a;--status-picked-color:#777;
+                --status-change-bg:#3a2200;--status-change-color:#f39c12;
+                --change-note-bg:#3a2200;--change-note-border:#f39c12;--change-note-color:#f39c12;
+            }
+        }
+        html{scroll-behavior:smooth}
+        body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px}
+
+        /* ── Nav ── */
+        nav{position:fixed;top:0;left:0;right:0;z-index:50;background:var(--nav-bg);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0.8rem 2rem;display:flex;align-items:center;justify-content:space-between}
+        .nav-logo{font-family:'DM Serif Display',serif;font-size:1.15rem;color:var(--accent);text-decoration:none}
+        .nav-links{display:flex;gap:1.5rem;align-items:center}
+        .nav-links a{color:var(--text-muted);text-decoration:none;font-size:0.82rem;font-weight:500;transition:color 0.2s}
+        .nav-links a:hover{color:var(--accent)}
+        .nav-cta{background:var(--accent)!important;color:#fff!important;padding:0.45rem 1.1rem;border-radius:8px;font-weight:600!important}
+        .nav-cta:hover{background:var(--accent-light)!important}
+        .nav-hamburger{display:none;background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text)}
+
+        .theme-toggle{background:none;border:1px solid var(--border);border-radius:8px;padding:0.25rem 0.55rem;cursor:pointer;font-size:1rem;transition:border-color 0.2s;line-height:1}
+        .theme-toggle:hover{border-color:var(--accent)}
+
+        /* ── Hero ── */
+        .hero{min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6rem 2rem 2rem;position:relative}
+        .hero-badge{display:inline-flex;align-items:center;gap:0.5rem;background:var(--card-bg);border:1px solid var(--border);border-radius:100px;padding:0.35rem 1rem;font-size:0.75rem;font-weight:600;color:var(--text-muted);margin-bottom:1.5rem;transition:background 0.3s,border-color 0.3s}
+        .hero-badge-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+        .hero h1{font-family:'DM Serif Display',serif;font-size:clamp(2.2rem,5.5vw,3.8rem);line-height:1.15;color:var(--text);max-width:700px;margin-bottom:1rem}
+        .hero h1 span{color:var(--accent)}
+        .hero-sub{font-size:0.95rem;color:var(--text-muted);max-width:520px;margin-bottom:2rem;line-height:1.8}
+        .hero-phone{display:inline-flex;align-items:center;gap:0.6rem;background:linear-gradient(135deg,var(--accent),#5c1a08);color:var(--gold);padding:0.9rem 2rem;border-radius:14px;font-size:1.3rem;font-weight:700;text-decoration:none;letter-spacing:1px;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 4px 20px rgba(139,58,26,0.25)}
+        .hero-phone:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(139,58,26,0.35)}
+        .hero-hint{margin-top:0.8rem;font-size:0.78rem;color:var(--text-muted)}
+        .scroll-indicator{margin-top:2.5rem;display:flex;flex-direction:column;align-items:center;gap:0.4rem;color:var(--text-muted);font-size:0.72rem;font-weight:500;animation:bobble 2s ease-in-out infinite;cursor:pointer;text-decoration:none}
+        .scroll-arrow{width:18px;height:18px;border-right:2px solid var(--text-muted);border-bottom:2px solid var(--text-muted);transform:rotate(45deg)}
+        @keyframes bobble{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+
+        /* ── Dashboard section ── */
+        .dash-section{padding:0 1.5rem 4rem;max-width:1200px;margin:0 auto}
+        .dash-section-header{text-align:center;margin-bottom:2rem}
+        .dash-section-header .section-label{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:var(--accent);margin-bottom:0.5rem}
+        .dash-section-header h2{font-family:'DM Serif Display',serif;font-size:clamp(1.4rem,3vw,1.8rem);margin-bottom:0.4rem}
+        .dash-section-header p{font-size:0.82rem;color:var(--text-muted)}
+
+        .dash-container{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start}
+        .dash-panel{background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:1.2rem 1.4rem;overflow:hidden}
+        .dash-panel h2{font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--accent);margin-bottom:0.6rem}
+
+        /* Menu inside dashboard */
+        .menu-note{font-size:0.72rem;color:var(--text-muted);margin-bottom:0.8rem}
+        .menu-category h3{font-size:0.7rem;color:var(--accent);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;padding:0.6rem 0 0.3rem;border-bottom:1px solid var(--border);margin-bottom:0.2rem}
+        .pizza-item{display:grid;grid-template-columns:2rem 1fr auto 28px;gap:0.3rem 0.5rem;align-items:baseline;padding:0.3rem 0.2rem;font-size:0.8rem}
+        .pizza-item:hover{background:var(--hover-bg);border-radius:4px}
+        .pizza-nr{font-weight:700;color:var(--accent);font-size:0.75rem}
+        .pizza-name{font-weight:600;color:var(--text)}
+        .pizza-price{font-weight:700;color:var(--accent);font-size:0.78rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+        .pizza-desc{grid-column:2/-1;font-size:0.7rem;color:var(--text-muted);line-height:1.4;padding-bottom:0.15rem}
+        .pizza-item.unavailable{opacity:0.45}
+        .pizza-item.unavailable .pizza-name{text-decoration:line-through}
+        .unavail-badge{font-size:0.6rem;background:#c0392b;color:#fff;padding:1px 5px;border-radius:4px;font-weight:700;margin-left:4px}
+        .unavail-reason{font-size:0.65rem;color:#c0392b;grid-column:2/-1;font-style:italic}
+        .pizza-toggle{width:22px;height:22px;border-radius:5px;border:1.5px solid var(--border);background:var(--card-bg);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:700;color:var(--green);transition:all 0.15s;flex-shrink:0}
+        .pizza-toggle:hover{border-color:#c0392b;background:#fef5f5;color:#c0392b}
+        .pizza-toggle.off{background:#c0392b;border-color:#c0392b;color:#fff}
+        .pizza-toggle.off:hover{background:var(--green);border-color:var(--green);color:#fff}
+
+        .menu-scroll{max-height:600px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+        .menu-scroll::-webkit-scrollbar{width:5px}
+        .menu-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+        .extras-section{margin-top:1rem}
+        .extras-section h3{font-size:0.7rem;color:var(--accent);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:0.3rem;padding-bottom:0.3rem;border-bottom:1px solid var(--border)}
+        .extra-item{padding:0.25rem 0.2rem;display:grid;grid-template-columns:1.5rem 1fr auto;gap:0.3rem;align-items:baseline;font-size:0.78rem}
+        .extra-emoji{font-size:0.9rem}
+        .extra-name{font-weight:500;color:var(--text)}
+        .extra-price{color:var(--accent);font-weight:700;font-size:0.78rem;font-variant-numeric:tabular-nums}
+
+        .btn-ingredients{background:linear-gradient(135deg,var(--accent),#5c1a08);color:var(--gold);border:none;padding:0.35rem 0.8rem;border-radius:6px;font-size:0.7rem;font-weight:700;cursor:pointer;letter-spacing:0.3px;margin-bottom:0.8rem;display:inline-block;font-family:inherit}
+        .btn-ingredients:hover{opacity:0.9}
+
+        /* Orders panel */
+        .orders-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.8rem;flex-wrap:wrap;gap:0.5rem}
+        .filters{display:flex;gap:0.3rem}
+        .filter-btn{padding:0.3rem 0.7rem;border:1px solid var(--border);background:var(--bg);border-radius:6px;font-size:0.7rem;font-weight:600;cursor:pointer;color:var(--text-muted);font-family:inherit;transition:all 0.15s}
+        .filter-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+        .order-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:0.8rem;transition:border-color 0.2s}
+        .order-card.status-new{border-left:3px solid var(--green)}
+        .order-card.status-oven{border-left:3px solid #e67e22}
+        .order-card.status-ready{border-left:3px solid #2ecc71}
+        .order-card.status-picked{border-left:3px solid var(--border);opacity:0.6}
+        .order-card.status-change{border-left:3px solid #f39c12}
+        .order-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem}
+        .order-id{font-weight:700;font-size:0.85rem}
+        .order-id .nr{color:var(--accent)}
+        .order-status{font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:0.5px}
+        .order-status.new{background:var(--status-new-bg);color:var(--status-new-color)}
+        .order-status.oven{background:var(--status-oven-bg);color:var(--status-oven-color)}
+        .order-status.ready{background:var(--status-ready-bg);color:var(--status-ready-color)}
+        .order-status.picked{background:var(--status-picked-bg);color:var(--status-picked-color)}
+        .order-status.change{background:var(--status-change-bg);color:var(--status-change-color)}
+        .order-items{font-size:0.8rem;color:var(--text-muted);margin-bottom:0.4rem}
+        .order-meta{display:flex;justify-content:space-between;font-size:0.72rem;color:var(--text-muted);margin-bottom:0.6rem}
+        .order-actions{display:flex;gap:0.4rem;flex-wrap:wrap}
+        .order-actions button{padding:0.3rem 0.7rem;border:none;border-radius:6px;font-size:0.7rem;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity 0.15s}
+        .order-actions button:hover{opacity:0.85}
+        .btn-oven{background:#e67e22;color:#fff}
+        .btn-ready{background:#2ecc71;color:#fff}
+        .btn-picked{background:#27ae60;color:#fff}
+        .btn-change{background:#f39c12;color:#fff}
+        .btn-cancel{background:var(--btn-muted-bg);color:var(--text-muted)}
+        .no-orders{text-align:center;padding:2rem 1rem;color:var(--text-muted);font-size:0.85rem;line-height:1.6}
+        .no-orders .icon{display:block;font-size:2rem;margin-bottom:0.5rem}
+        .order-change-note{background:var(--change-note-bg);border:1px solid var(--change-note-border);border-radius:6px;padding:0.4rem 0.6rem;margin-bottom:0.5rem;font-size:0.75rem;color:var(--change-note-color);font-weight:600}
+
+        /* ── Modals ── */
+        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;align-items:center;justify-content:center}
+        .modal-overlay.open{display:flex}
+        .modal{background:var(--card-bg);border-radius:16px;padding:1.5rem;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+        .modal h3{font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--accent);margin-bottom:0.8rem}
+        .modal p{font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem}
+        .modal input[type=text]{width:100%;padding:0.6rem 0.8rem;border:1px solid var(--border);border-radius:8px;font-size:0.85rem;margin-bottom:1rem;font-family:inherit;background:var(--bg);color:var(--text)}
+        .modal input:focus{outline:none;border-color:var(--accent)}
+        .modal-actions{display:flex;gap:0.5rem;justify-content:flex-end}
+        .modal-actions button{padding:0.5rem 1.2rem;border:none;border-radius:8px;font-size:0.82rem;font-weight:600;cursor:pointer;font-family:inherit}
+        .modal-btn-cancel{background:var(--btn-muted-bg);color:var(--text-muted)}
+        .modal-btn-unavail{background:#c0392b;color:#fff}
+        .modal-btn-avail{background:#2ecc71;color:#fff}
+        .modal-btn-change{background:#f39c12;color:#fff}
+        .modal.wide{max-width:500px}
+        .ing-list{max-height:50vh;overflow-y:auto}
+        .ing-item{display:flex;align-items:center;justify-content:space-between;padding:0.45rem 0;border-bottom:1px solid var(--border);font-size:0.82rem}
+        .ing-item:last-child{border-bottom:none}
+        .ing-name{font-weight:500}
+        .ing-count{font-size:0.7rem;color:#a0917f;margin-left:6px}
+        .ing-toggle{width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0}
+        .ing-toggle.on{background:#2ecc71}
+        .ing-toggle.off{background:#c0392b}
+        .ing-toggle::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:3px;transition:left 0.2s}
+        .ing-toggle.on::after{left:23px}
+        .ing-toggle.off::after{left:3px}
+
+        /* ── Info sections ── */
+        .info-section{padding:4rem 2rem;max-width:900px;margin:0 auto}
+        .section-label{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:var(--accent);margin-bottom:0.8rem}
+        .info-section h2{font-family:'DM Serif Display',serif;font-size:clamp(1.6rem,3.5vw,2.2rem);line-height:1.25;margin-bottom:1rem}
+        .info-section p.lead{font-size:0.92rem;color:var(--text-muted);max-width:600px;line-height:1.8}
+        .section-divider{max-width:900px;margin:0 auto;border:none;border-top:1px solid var(--border)}
+
+        .demo-explain{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:2rem}
+        .demo-card{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:1.5rem}
+        .demo-card-icon{font-size:1.4rem;margin-bottom:0.6rem}
+        .demo-card h3{font-family:'DM Serif Display',serif;font-size:1rem;margin-bottom:0.4rem}
+        .demo-card p{font-size:0.8rem;color:var(--text-muted);line-height:1.7}
+
+        .steps{margin-top:2rem;display:flex;flex-direction:column}
+        .step{display:grid;grid-template-columns:3rem 1fr;gap:1rem;padding:1.2rem 0;border-bottom:1px solid var(--border)}
+        .step:last-child{border-bottom:none}
+        .step-nr{width:2.6rem;height:2.6rem;border-radius:50%;background:var(--accent);color:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.95rem;flex-shrink:0}
+        .step h3{font-family:'DM Serif Display',serif;font-size:1rem;margin-bottom:0.2rem}
+        .step p{font-size:0.8rem;color:var(--text-muted);line-height:1.7}
+
+        .tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem}
+        .tech-item{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:1.3rem;text-align:center}
+        .tech-item-icon{font-size:1.6rem;margin-bottom:0.5rem}
+        .tech-item h3{font-size:0.82rem;font-weight:700;margin-bottom:0.3rem}
+        .tech-item p{font-size:0.72rem;color:var(--text-muted);line-height:1.6}
+
+        .code-section{background:var(--bg-dark);border-radius:14px;padding:1.8rem;margin-top:2rem;overflow-x:auto}
+        .code-section .code-label{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#7a6b5d;margin-bottom:0.8rem}
+        .code-section pre{font-family:'JetBrains Mono',monospace;font-size:0.78rem;line-height:1.8;color:#e8ddd0;white-space:pre}
+        .code-section pre .kw{color:#f0a070}
+        .code-section pre .str{color:#a8d8a0}
+        .code-section pre .cm{color:#6b5a4d}
+
+        /* Guide section */
+        .guide-steps{margin-top:2rem;counter-reset:guide}
+        .guide-step{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:1.5rem 1.5rem 1.5rem 3.5rem;margin-bottom:1rem;position:relative}
+        .guide-step::before{counter-increment:guide;content:counter(guide);position:absolute;left:1.2rem;top:1.5rem;width:1.6rem;height:1.6rem;border-radius:50%;background:var(--accent);color:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8rem}
+        .guide-step h3{font-family:'DM Serif Display',serif;font-size:0.95rem;margin-bottom:0.3rem}
+        .guide-step p{font-size:0.8rem;color:var(--text-muted);line-height:1.7;margin-bottom:0.5rem}
+        .guide-step p:last-child{margin-bottom:0}
+        .guide-step code{background:var(--bg);padding:0.15rem 0.4rem;border-radius:4px;font-size:0.75rem;color:var(--accent);border:1px solid var(--border)}
+        .prompt-box{background:var(--bg-dark);border-radius:14px;padding:1.8rem;margin-top:2rem;overflow-x:auto}
+        .prompt-box .prompt-label{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#7a6b5d;margin-bottom:0.8rem}
+        .prompt-box pre{font-family:'JetBrains Mono',monospace;font-size:0.75rem;line-height:1.7;color:#e8ddd0;white-space:pre-wrap;word-break:break-word}
+        .prompt-box pre .hi{color:#f0a070}
+        .prompt-box pre .cm{color:#6b5a4d}
+        .prompt-tip{background:var(--card-bg);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:1rem 1.2rem;margin-top:1.5rem;font-size:0.8rem;color:var(--text-muted);line-height:1.7}
+        .prompt-tip strong{color:var(--text)}
+        .file-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem}
+        .file-card{background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:1rem}
+        .file-card h4{font-size:0.8rem;font-weight:700;color:var(--accent);margin-bottom:0.2rem;font-family:'JetBrains Mono',monospace}
+        .file-card p{font-size:0.72rem;color:var(--text-muted);line-height:1.5}
+
+        /* Björns tips */
+        .tips-intro{display:flex;gap:1.5rem;align-items:flex-start;margin-bottom:2rem}
+        .tips-avatar{width:72px;height:72px;border-radius:50%;object-fit:cover;flex-shrink:0;border:3px solid var(--border)}
+        .tips-intro-text{font-size:0.85rem;color:var(--text-muted);line-height:1.8}
+        .tips-intro-text strong{color:var(--text)}
+        .tip-card{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:1rem}
+        .tip-card h3{font-family:'DM Serif Display',serif;font-size:1rem;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.5rem}
+        .tip-card p{font-size:0.8rem;color:var(--text-muted);line-height:1.7;margin-bottom:0.5rem}
+        .tip-card p:last-child{margin-bottom:0}
+        .tip-card ul{font-size:0.8rem;color:var(--text-muted);line-height:1.8;padding-left:1.2rem;margin-bottom:0.5rem}
+        .tip-card code{background:var(--bg);padding:0.15rem 0.4rem;border-radius:4px;font-size:0.73rem;color:var(--accent);border:1px solid var(--border)}
+        .tip-card .cmd{background:var(--bg-dark);border-radius:8px;padding:0.7rem 1rem;margin:0.6rem 0;font-family:'JetBrains Mono',monospace;font-size:0.73rem;color:#e8ddd0;overflow-x:auto;line-height:1.6}
+        .tip-card .cmd .cm{color:#6b5a4d}
+        .tip-card .cmd .kw{color:#f0a070}
+        .tip-card .cmd .str{color:#a8d8a0}
+        .claude-prompt{background:linear-gradient(135deg,#2d1b69,#1a1040);border-radius:14px;padding:1.5rem;margin-top:1.5rem;border:1px solid #3d2b79}
+        .claude-prompt .prompt-label{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#8b7bc0;margin-bottom:0.8rem}
+        .claude-prompt pre{font-family:'JetBrains Mono',monospace;font-size:0.75rem;line-height:1.7;color:#d4c8f0;white-space:pre-wrap;word-break:break-word}
+        .claude-prompt pre .user{color:#a8d8a0;font-weight:600}
+        .claude-prompt pre .ai{color:#8bb8f0}
+
+        .faq-list{margin-top:1.5rem}
+        .faq-item{border-bottom:1px solid var(--border)}
+        .faq-q{display:flex;justify-content:space-between;align-items:center;padding:1rem 0;cursor:pointer;font-weight:600;font-size:0.85rem;color:var(--text);background:none;border:none;width:100%;text-align:left;font-family:inherit}
+        .faq-q:hover{color:var(--accent)}
+        .faq-chevron{transition:transform 0.3s;font-size:0.75rem;color:var(--text-muted);flex-shrink:0;margin-left:1rem}
+        .faq-item.open .faq-chevron{transform:rotate(180deg)}
+        .faq-a{max-height:0;overflow:hidden;transition:max-height 0.35s ease,padding 0.35s ease}
+        .faq-item.open .faq-a{max-height:300px;padding-bottom:1rem}
+        .faq-a p{font-size:0.8rem;color:var(--text-muted);line-height:1.8}
+
+        .cta-section{background:linear-gradient(135deg,var(--bg-dark),#2a1e14);border-radius:20px;padding:3rem 2rem;text-align:center;margin:3rem auto;max-width:900px}
+        .cta-section h2{font-family:'DM Serif Display',serif;color:var(--gold);font-size:clamp(1.4rem,3vw,1.9rem);margin-bottom:0.8rem}
+        .cta-section p{color:#a0917f;font-size:0.85rem;max-width:500px;margin:0 auto 1.5rem;line-height:1.7}
+        .cta-buttons{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+        .cta-btn-primary{background:var(--accent);color:#fff;padding:0.7rem 1.6rem;border-radius:10px;text-decoration:none;font-weight:700;font-size:0.85rem;transition:background 0.2s}
+        .cta-btn-primary:hover{background:var(--accent-light)}
+        .cta-btn-secondary{background:rgba(255,255,255,0.08);color:var(--gold);padding:0.7rem 1.6rem;border-radius:10px;text-decoration:none;font-weight:600;font-size:0.85rem;border:1px solid rgba(255,255,255,0.12);transition:background 0.2s}
+        .cta-btn-secondary:hover{background:rgba(255,255,255,0.14)}
+
+        .related-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem}
+        .related-card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:1.3rem;text-decoration:none;color:inherit;transition:box-shadow 0.2s,transform 0.2s}
+        .related-card:hover{box-shadow:0 4px 20px rgba(0,0,0,0.06);transform:translateY(-2px)}
+        .related-card h3{font-size:0.85rem;font-weight:700;margin-bottom:0.2rem;color:var(--accent)}
+        .related-card p{font-size:0.75rem;color:var(--text-muted);line-height:1.6}
+
+        footer{border-top:1px solid var(--border);padding:2rem;max-width:900px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+        .footer-left{font-size:0.72rem;color:var(--text-muted)}
+        .footer-left a{color:var(--accent);text-decoration:none}
+        .footer-links{display:flex;gap:1.5rem}
+        .footer-links a{font-size:0.72rem;color:var(--text-muted);text-decoration:none}
+        .footer-links a:hover{color:var(--accent)}
+
+        @media(max-width:900px){
+            .dash-container{grid-template-columns:1fr}
+            .dash-panel{padding:1rem}
+        }
+        @media(max-width:700px){
+            .nav-links{display:none}
+            .nav-links.open{display:flex;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:var(--card-bg);border-bottom:1px solid var(--border);padding:1rem 2rem;gap:0.8rem}
+            .nav-hamburger{display:block}
+            .demo-explain,.tech-grid,.related-grid{grid-template-columns:1fr}
+            .hero{padding:5rem 1.2rem 1.5rem;min-height:auto}
+            .hero h1{font-size:1.8rem}
+            .hero-sub{font-size:0.85rem;margin-bottom:1.5rem}
+            .hero-phone{font-size:1.05rem;padding:0.75rem 1.4rem}
+            .scroll-indicator{margin-top:1.8rem}
+            .dash-section{padding:0 0.8rem 2.5rem}
+            .dash-section-header h2{font-size:1.2rem}
+            .menu-scroll{max-height:400px}
+            .info-section{padding:2.5rem 1.2rem}
+            .step{grid-template-columns:2.5rem 1fr;gap:0.8rem}
+            .step-nr{width:2.2rem;height:2.2rem;font-size:0.85rem}
+            .code-section{padding:1.2rem;margin-top:1.5rem}
+            .code-section pre{font-size:0.65rem;line-height:1.6}
+            .cta-section{padding:2rem 1.2rem;margin:2rem 0.8rem;border-radius:14px}
+            .cta-buttons{flex-direction:column;align-items:center}
+            .cta-btn-primary,.cta-btn-secondary{width:100%;text-align:center}
+            footer{flex-direction:column;text-align:center;padding:1.5rem 1.2rem}
+            .order-actions{flex-direction:column}
+            .order-actions button{width:100%}
+            .filters{gap:0.2rem}
+            .filter-btn{padding:0.25rem 0.5rem;font-size:0.65rem}
+            .file-grid{grid-template-columns:1fr}
+            .guide-step{padding:1.2rem 1.2rem 1.2rem 3rem}
+            .guide-step::before{left:0.8rem;top:1.2rem}
+            .tips-intro{flex-direction:column;align-items:center;text-align:center}
+            .claude-prompt{padding:1rem}
+            .claude-prompt pre{font-size:0.65rem}
+            .prompt-box{padding:1.2rem}
+            .prompt-box pre{font-size:0.65rem}
+        }
+    </style>
 </head>
 <body>
 
-<header>
-    <h1>Pizzeria Bella</h1>
-    <span class="phone"><a href="tel:+46766867485">076-686 74 85</a></span>
-</header>
+<div class="beta-banner">
+    <span class="beta-tag">BETA</span>
+    <span>Det h&auml;r &auml;r en intern beta fr&aring;n <a href="https://46elks.com" target="_blank" rel="noopener">46elks</a> &mdash; inte lanserad &auml;nnu. Saker kan g&aring; s&ouml;nder, f&ouml;r&auml;ndras eller f&ouml;rsvinna.</span>
+</div>
 
-<div class="container">
-    <div class="menu-panel">
-        <h2>Meny</h2>
-        <p class="menu-note">Alla pizzor innehåller tomatsås &amp; ost. Glutenfri botten +25 kr.</p>
-        <div id="menu"></div>
+<nav>
+    <a href="/" class="nav-logo">pizzanummer.se</a>
+    <button class="nav-hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Meny">&#9776;</button>
+    <div class="nav-links">
+        <a href="#dashboard">Pizzak&ouml;ket</a>
+        <a href="#om">Om</a>
+        <a href="#hur">Hur det fungerar</a>
+        <a href="#teknik">Teknik</a>
+        <a href="#bygg">Bygg ditt eget</a>
+        <a href="#tips">Bj&ouml;rns tips</a>
+        <a href="#faq">FAQ</a>
+        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Byt tema"></button>
+        <a href="https://46elks.com/register/pizzanummer/pizzanummer" class="nav-cta" target="_blank" rel="noopener">Skapa konto &rarr;</a>
     </div>
-    <div class="orders-panel">
-        <div class="orders-header">
-            <h2>Beställningar</h2>
-            <div class="filters">
-                <button class="filter-btn active" data-filter="active" onclick="setFilter('active')">Att göra</button>
-                <button class="filter-btn" data-filter="ready" onclick="setFilter('ready')">Klara</button>
-                <button class="filter-btn" data-filter="all" onclick="setFilter('all')">Alla</button>
+</nav>
+
+<!-- ════ HERO ════ -->
+<section class="hero">
+    <div class="hero-badge">
+        <span class="hero-badge-dot"></span>
+        Demo av 46elks r&ouml;st-API
+    </div>
+    <h1>Ring och best&auml;ll pizza med <span>AI</span></h1>
+    <p class="hero-sub">
+        En AI-r&ouml;stassistent tar din best&auml;llning, skickar SMS-bekr&auml;ftelse och h&aring;ller koll p&aring; din pizza. Byggt med 46elks API + OpenAI.
+    </p>
+    <a href="tel:+46766867777" class="hero-phone">
+        <span class="hero-phone-icon">&#128222;</span>
+        076-686 77 77
+    </a>
+    <p class="hero-hint">Ring numret och se best&auml;llningen dyka upp nedan&mdash;live!</p>
+    <a href="#dashboard" class="scroll-indicator">
+        <span>Se pizzak&ouml;ket</span>
+        <span class="scroll-arrow"></span>
+    </a>
+</section>
+
+<!-- ════ PIZZAKÖKET ════ -->
+<div class="dash-section" id="dashboard">
+    <div class="dash-section-header">
+        <div class="section-label">Pizzeria Elken &mdash; Live</div>
+        <h2>Beställningar dyker upp här i realtid</h2>
+        <p>Ring numret ovan och se din order dyka upp. Allt drivs av 46elks röst-API.</p>
+    </div>
+    <div class="dash-container">
+        <div class="dash-panel">
+            <h2>Meny</h2>
+            <p class="menu-note">Alla pizzor inneh&aring;ller tomats&aring;s &amp; &auml;lgmj&ouml;lksmozzarella.</p>
+            <button class="btn-ingredients" onclick="openIngredientModal()">Ingredienser &mdash; markera slut</button>
+            <div class="menu-scroll">
+                <div id="menu"></div>
+                <div class="extras-section">
+                    <h3>Drycker</h3>
+                    <div id="drinks"></div>
+                </div>
+                <div class="extras-section">
+                    <h3>Sallader</h3>
+                    <div id="salads"></div>
+                </div>
+                <div class="extras-section">
+                    <h3>Tillbeh&ouml;r</h3>
+                    <div id="sides"></div>
+                </div>
             </div>
         </div>
-        <div id="orders">
-            <div class="no-orders"><span class="icon">📋</span>Inga beställningar ännu<br>Ring och beställ!</div>
+        <div class="dash-panel">
+            <div class="orders-header">
+                <h2>Best&auml;llningar</h2>
+                <div class="filters">
+                    <button class="filter-btn active" data-filter="active" onclick="setFilter('active')">Att g&ouml;ra</button>
+                    <button class="filter-btn" data-filter="ready" onclick="setFilter('ready')">Klara</button>
+                    <button class="filter-btn" data-filter="all" onclick="setFilter('all')">Alla</button>
+                </div>
+            </div>
+            <div id="orders">
+                <div class="no-orders"><span class="icon">&#129420;</span>Inga best&auml;llningar &auml;nnu<br>Ring och best&auml;ll!</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ════ OM ════ -->
+<hr class="section-divider">
+<div class="info-section" id="om">
+    <div class="section-label">Om demot</div>
+    <h2>Vad &auml;r pizzanummer.se?</h2>
+    <p class="lead">
+        Pizzanummer.se &auml;r en teknisk demo som visar hur man kan bygga en komplett
+        AI-driven telefonbest&auml;llning med <strong>46elks r&ouml;st-API</strong>.
+        Ingen riktig pizza levereras &mdash; men tekniken bakom &auml;r verklig.
+    </p>
+    <div class="demo-explain">
+        <div class="demo-card">
+            <div class="demo-card-icon">&#128222;</div>
+            <h3>R&ouml;stsamtal via 46elks</h3>
+            <p>Ditt samtal kopplas via 46elks WebSocket-API direkt till en AI-r&ouml;stassistent som f&ouml;rst&aring;r svenska.</p>
+        </div>
+        <div class="demo-card">
+            <div class="demo-card-icon">&#129302;</div>
+            <h3>AI som f&ouml;rst&aring;r dig</h3>
+            <p>OpenAI Realtime API driver konversationen. R&ouml;stassistenten f&ouml;rst&aring;r naturligt tal och sammanfattar din order.</p>
+        </div>
+        <div class="demo-card">
+            <div class="demo-card-icon">&#128172;</div>
+            <h3>SMS-bekr&auml;ftelse</h3>
+            <p>N&auml;r best&auml;llningen &auml;r klar skickas ett SMS via 46elks med orderdetaljer och en sp&aring;rningsl&auml;nk.</p>
+        </div>
+        <div class="demo-card">
+            <div class="demo-card-icon">&#128187;</div>
+            <h3>Pizzak&ouml;ket &mdash; live</h3>
+            <p>Pizzak&ouml;ket ovan visar ordrar i realtid. Hantera meny, ingredienser och orderstatus direkt.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ════ HUR ════ -->
+<hr class="section-divider">
+<div class="info-section" id="hur">
+    <div class="section-label">S&aring; fungerar det</div>
+    <h2>Fr&aring;n samtal till pizza</h2>
+    <p class="lead">Hela fl&ouml;det &mdash; fr&aring;n att du ringer till att pizzerian b&ouml;rjar baka &mdash; sker automatiskt.</p>
+    <div class="steps">
+        <div class="step">
+            <span class="step-nr">1</span>
+            <div>
+                <h3>Du ringer 076-686 77 77</h3>
+                <p>Samtalet kopplas via 46elks till v&aring;r server &ouml;ver WebSocket. Ingen v&auml;ntetid, ingen k&ouml;.</p>
+            </div>
+        </div>
+        <div class="step">
+            <span class="step-nr">2</span>
+            <div>
+                <h3>AI tar din best&auml;llning</h3>
+                <p>R&ouml;stassistenten presenterar menyn, hj&auml;lper dig v&auml;lja, och bekr&auml;ftar din order p&aring; svenska.</p>
+            </div>
+        </div>
+        <div class="step">
+            <span class="step-nr">3</span>
+            <div>
+                <h3>SMS + sp&aring;rning</h3>
+                <p>Du f&aring;r ett SMS med din order och en l&auml;nk d&auml;r du kan f&ouml;lja status i realtid.</p>
+            </div>
+        </div>
+        <div class="step">
+            <span class="step-nr">4</span>
+            <div>
+                <h3>Pizzerian hanterar ordern</h3>
+                <p>Pizzak&ouml;ket visar nya ordrar live. Pizzerian uppdaterar status &mdash; kunden ser det direkt.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ════ TEKNIK ════ -->
+<hr class="section-divider">
+<div class="info-section" id="teknik">
+    <div class="section-label">Under huven</div>
+    <h2>Byggt med 46elks</h2>
+    <p class="lead">Hela demot k&ouml;r p&aring; en enda server och anv&auml;nder tre 46elks-funktioner.</p>
+    <div class="tech-grid">
+        <div class="tech-item">
+            <div class="tech-item-icon">&#127897;</div>
+            <h3>R&ouml;st via WebSocket</h3>
+            <p>46elks kopplar samtal som r&aring; PCM-ljud &ouml;ver WebSocket. Vi bridgar det till OpenAI Realtime API.</p>
+        </div>
+        <div class="tech-item">
+            <div class="tech-item-icon">&#128172;</div>
+            <h3>SMS-API</h3>
+            <p>Orderbekr&auml;ftelse, statusuppdateringar och sp&aring;rningsl&auml;nkar skickas via 46elks SMS.</p>
+        </div>
+        <div class="tech-item">
+            <div class="tech-item-icon">&#128222;</div>
+            <h3>Telefonnummer</h3>
+            <p>Svenskt mobilnummer allokerat via 46elks. Konfigurerat att peka p&aring; v&aring;r WebSocket-server.</p>
+        </div>
+    </div>
+    <div class="code-section">
+        <div class="code-label">Exempel &mdash; Konfigurera nummer med 46elks API</div>
+<pre><span class="cm"># Peka ett 46elks-nummer mot din WebSocket-server</span>
+<span class="kw">curl</span> -X POST https://api.46elks.com/a1/numbers/&lt;nr&gt; \
+  -u &lt;api_user&gt;:&lt;api_pass&gt; \
+  -d <span class="str">voice_start=wss://din-server.se/ws</span>
+
+<span class="cm"># Skicka SMS-bekr&auml;ftelse</span>
+<span class="kw">curl</span> -X POST https://api.46elks.com/a1/sms \
+  -u &lt;api_user&gt;:&lt;api_pass&gt; \
+  -d <span class="str">from=Pizzerian</span> \
+  -d <span class="str">to=+46701234567</span> \
+  -d <span class="str">message=Din pizza &auml;r best&auml;lld!</span></pre>
+    </div>
+</div>
+
+<!-- ════ BYGG DITT EGET ════ -->
+<hr class="section-divider">
+<div class="info-section" id="bygg">
+    <div class="section-label">Steg-f&ouml;r-steg</div>
+    <h2>Bygg ditt eget pizzanummer</h2>
+    <p class="lead">Allt du beh&ouml;ver &auml;r ett 46elks-konto, en server och en OpenAI API-nyckel. H&auml;r &auml;r hela processen.</p>
+
+    <div class="guide-steps">
+        <div class="guide-step">
+            <h3>Skapa konto &amp; allokera nummer</h3>
+            <p>Registrera dig p&aring; <a href="https://46elks.com/register/pizzanummer/pizzanummer" style="color:var(--accent)">46elks.com</a>. Allokera sedan ett svenskt telefonnummer via API:et:</p>
+            <div class="code-section" style="margin-top:0.8rem">
+<pre><span class="kw">curl</span> -X POST https://api.46elks.com/a1/numbers \
+  -u &lt;api_user&gt;:&lt;api_pass&gt; \
+  -d <span class="str">country=se</span> \
+  -d <span class="str">sms_url=https://din-server.se/sms</span> \
+  -d <span class="str">voice_start=wss://din-server.se/ws</span></pre>
+            </div>
+            <p style="margin-top:0.6rem"><code>voice_start</code> pekar p&aring; din WebSocket-server d&auml;r samtalet kopplas.</p>
+        </div>
+
+        <div class="guide-step">
+            <h3>S&auml;tt upp WebSocket-servern</h3>
+            <p>N&auml;r n&aring;gon ringer ditt nummer &ouml;ppnar 46elks en WebSocket-anslutning till din server. Ljud skickas som r&aring; PCM-data (8kHz, 16-bit, mono). Du beh&ouml;ver:</p>
+            <div class="file-grid">
+                <div class="file-card">
+                    <h4>voice_agent.py</h4>
+                    <p>WebSocket-server som tar emot ljud fr&aring;n 46elks, skickar det till OpenAI Realtime API, och spelar upp svaret tillbaka.</p>
+                </div>
+                <div class="file-card">
+                    <h4>web_app.py</h4>
+                    <p>Flask-app som tar emot best&auml;llningar fr&aring;n AI:n, lagrar i SQLite, skickar SMS via 46elks och visar pizzak&ouml;ket.</p>
+                </div>
+                <div class="file-card">
+                    <h4>menu.py</h4>
+                    <p>Menydata som Python-listor. AI:n f&aring;r menyn som text i sitt systemprompt. L&auml;tt att &auml;ndra och ut&ouml;ka.</p>
+                </div>
+                <div class="file-card">
+                    <h4>.env</h4>
+                    <p>API-nycklar: <code>ELKS_API_USER</code>, <code>ELKS_API_PASS</code>, <code>OPENAI_API_KEY</code> och <code>PIZZA_PHONE</code>.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="guide-step">
+            <h3>Bridga 46elks &harr; OpenAI</h3>
+            <p>Koppla samman tv&aring; WebSockets: en fr&aring;n 46elks (inkommande ljud) och en till OpenAI Realtime API (AI-svar). Ljudet m&aring;ste konverteras:</p>
+            <p><strong>46elks &rarr; OpenAI:</strong> PCM 8kHz &rarr; base64-encode &rarr; skicka som <code>input_audio_buffer.append</code></p>
+            <p><strong>OpenAI &rarr; 46elks:</strong> Ta emot <code>response.audio.delta</code> &rarr; base64-decode &rarr; resampla till 8kHz &rarr; skicka tillbaka</p>
+        </div>
+
+        <div class="guide-step">
+            <h3>Definiera AI-verktyg (function calling)</h3>
+            <p>OpenAI Realtime API st&ouml;der function calling. Definiera en <code>submit_order</code>-funktion som AI:n anropar n&auml;r kunden &auml;r klar:</p>
+            <div class="code-section" style="margin-top:0.8rem">
+<pre><span class="cm"># Verktygsdefinition f&ouml;r OpenAI</span>
+{
+  <span class="str">"name"</span>: <span class="str">"submit_order"</span>,
+  <span class="str">"description"</span>: <span class="str">"Skicka in best&auml;llningen"</span>,
+  <span class="str">"parameters"</span>: {
+    <span class="str">"customer_name"</span>: { <span class="str">"type"</span>: <span class="str">"string"</span> },
+    <span class="str">"items"</span>: [{
+      <span class="str">"pizza_nr"</span>: <span class="str">"integer"</span>,
+      <span class="str">"qty"</span>: <span class="str">"integer"</span>,
+      <span class="str">"modifications"</span>: <span class="str">"string"</span>
+    }]
+  }
+}</pre>
+            </div>
+            <p style="margin-top:0.6rem">N&auml;r AI:n anropar funktionen, posta best&auml;llningen till din Flask-app och skicka SMS via 46elks.</p>
+        </div>
+
+        <div class="guide-step">
+            <h3>Skriv AI-promptet</h3>
+            <p>Promptet &auml;r nyckeln &mdash; det best&auml;mmer hur AI:n beter sig p&aring; telefon. H&auml;r &auml;r ett f&ouml;renklat exempel baserat p&aring; v&aring;rt riktiga prompt:</p>
+        </div>
+    </div>
+
+    <div class="prompt-box">
+        <div class="prompt-label">AI-prompt &mdash; Systeminstruktioner f&ouml;r r&ouml;stassistenten</div>
+<pre><span class="hi">Du &auml;r en trevlig receptionist p&aring; [Din Pizzeria].</span>
+<span class="hi">Du svarar p&aring; svenska. Du tar emot pizzabest&auml;llningar via telefon.</span>
+
+H&auml;r &auml;r menyn:
+<span class="cm">--- Klassiska pizzor ---</span>
+1. Margherita (95 kr) &mdash; Mozzarella, tomat, basilika
+2. Vesuvio (105 kr) &mdash; Skinka
+3. Capricciosa (115 kr) &mdash; Skinka, champinjoner
+<span class="cm">... (hela din meny h&auml;r)</span>
+
+<span class="cm">--- Drycker ---</span>
+Coca-Cola 33cl (25 kr)
+Fanta 33cl (25 kr)
+
+<span class="hi">S&aring; h&auml;r g&ouml;r du:</span>
+1. H&auml;lsa kunden v&auml;lkommen
+2. Fr&aring;ga vad de vill best&auml;lla
+3. Om kunden s&auml;ger ett pizzanummer eller namn, bekr&auml;fta valet
+4. Fr&aring;ga om de vill ha n&aring;got att dricka
+5. Fr&aring;ga om de vill ha fler pizzor
+6. Fr&aring;ga kundens namn
+7. Sammanfatta best&auml;llningen med totalpris
+8. Anropa <span class="hi">submit_order</span> med best&auml;llningen
+9. Avsluta samtalet artigt
+
+<span class="hi">Var trevlig och naturlig, som en riktig pizzeria-receptionist.
+H&aring;ll svaren korta &mdash; det &auml;r ett telefonsamtal.</span>
+
+<span class="cm"># Tips: L&auml;gg till regler f&ouml;r &auml;ndringar, tillval, och ej tillg&auml;ngliga r&auml;tter dynamiskt.</span></pre>
+    </div>
+
+    <div class="prompt-tip">
+        <strong>Tips f&ouml;r bra prompts:</strong> Ge AI:n en tydlig personlighet och konkreta steg. Inkludera hela menyn med priser i promptet &mdash; AI:n beh&ouml;ver det f&ouml;r att r&auml;kna r&auml;tt. Anv&auml;nd <code>VERSALER</code> f&ouml;r viktiga regler. H&aring;ll instruktionerna till max ~2000 ord f&ouml;r b&auml;st prestanda.
+    </div>
+    <div class="prompt-tip" style="margin-top:0.8rem">
+        <strong>Dynamiskt prompt:</strong> Bygg promptet vid varje samtalsstart. H&auml;mta listan &ouml;ver ej tillg&auml;ngliga r&auml;tter fr&aring;n databasen och l&auml;gg till i promptet &mdash; d&aring; kan personalen styra menyn i realtid utan att starta om servern.
+    </div>
+
+    <div class="code-section" style="margin-top:1.5rem">
+        <div class="code-label">Komplett fl&ouml;de &mdash; Python-pseudokod</div>
+<pre><span class="cm"># 1. 46elks ringer din WebSocket-server</span>
+<span class="kw">async def</span> handle_call(elks_ws):
+    <span class="cm"># 2. &Ouml;ppna anslutning till OpenAI Realtime API</span>
+    openai_ws = <span class="kw">await</span> connect(<span class="str">"wss://api.openai.com/v1/realtime"</span>)
+
+    <span class="cm"># 3. Skicka konfiguration + prompt</span>
+    <span class="kw">await</span> openai_ws.send({
+        <span class="str">"type"</span>: <span class="str">"session.update"</span>,
+        <span class="str">"session"</span>: {
+            <span class="str">"instructions"</span>: build_prompt(),
+            <span class="str">"voice"</span>: <span class="str">"alloy"</span>,
+            <span class="str">"tools"</span>: [submit_order_tool],
+        }
+    })
+
+    <span class="cm"># 4. Bridga ljud i b&aring;da riktningarna</span>
+    <span class="kw">async for</span> msg <span class="kw">in</span> elks_ws:
+        <span class="cm"># PCM fr&aring;n 46elks &rarr; base64 &rarr; OpenAI</span>
+        <span class="kw">await</span> openai_ws.send({
+            <span class="str">"type"</span>: <span class="str">"input_audio_buffer.append"</span>,
+            <span class="str">"audio"</span>: base64_encode(msg)
+        })
+
+    <span class="cm"># 5. N&auml;r AI anropar submit_order &rarr; spara + skicka SMS</span>
+    <span class="kw">def</span> on_function_call(name, args):
+        requests.post(<span class="str">"http://localhost:5000/api/orders"</span>, json=args)
+        send_sms_via_46elks(args[<span class="str">"customer_phone"</span>], <span class="str">"Din pizza &auml;r best&auml;lld!"</span>)</pre>
+    </div>
+</div>
+
+<!-- ════ BJÖRNS TIPS ════ -->
+<hr class="section-divider">
+<div class="info-section" id="tips">
+    <div class="section-label">Fr&aring;n id&eacute; till produktion</div>
+    <h2>Bj&ouml;rns tips till dig som vill bygga</h2>
+
+    <div class="tips-intro">
+        <img class="tips-avatar" src="https://46elks.com/static/images/support/bjorn.jpg" alt="Bj&ouml;rn Skyttberg">
+        <div class="tips-intro-text">
+            <strong>Hej! Jag heter Bj&ouml;rn</strong> och jag byggde pizzanummer.se p&aring; en eftermiddag. Hela projektet &mdash; fr&aring;n tom server till fungerande AI-pizzeria &mdash; gjordes med <strong>Claude Code</strong> (Anthropics CLI-verktyg) och en billig Hetzner-server. H&auml;r &auml;r exakt hur jag gick tillv&auml;ga.
+        </div>
+    </div>
+
+    <div class="tip-card">
+        <h3>&#9881; Steg 1: Hetzner-server f&ouml;r 5 EUR/m&aring;n</h3>
+        <p>Jag anv&auml;nder en <strong>Hetzner Cloud CX22</strong> (2 vCPU, 4 GB RAM, Ubuntu 24.04). Det r&auml;cker g&ouml;tt f&ouml;r det h&auml;r. S&aring; h&auml;r s&auml;tter du upp den:</p>
+        <div class="cmd">
+<span class="cm"># SSH in p&aring; din nya server</span>
+<span class="kw">ssh</span> root@din-server.se
+
+<span class="cm"># Installera det du beh&ouml;ver</span>
+<span class="kw">apt update &amp;&amp; apt install</span> python3-pip python3-venv nginx certbot python3-certbot-nginx
+
+<span class="cm"># Skapa projektmapp</span>
+<span class="kw">mkdir</span> /home/pizza &amp;&amp; <span class="kw">cd</span> /home/pizza
+<span class="kw">python3 -m venv</span> venv
+<span class="kw">source</span> venv/bin/activate
+<span class="kw">pip install</span> flask websockets requests python-dotenv
+        </div>
+    </div>
+
+    <div class="tip-card">
+        <h3>&#128640; Steg 2: DNS + SSL</h3>
+        <p>Peka din dom&auml;n mot serverns IP (A-record). Sen fixar Certbot SSL &aring;t dig:</p>
+        <div class="cmd">
+<span class="cm"># H&auml;mta SSL-certifikat</span>
+<span class="kw">certbot</span> --nginx -d pizzanummer.se -d www.pizzanummer.se
+        </div>
+        <p>Nginx beh&ouml;ver proxy:a b&aring;de HTTP (Flask-appen) och WebSocket (r&ouml;stagenten). L&auml;gg till <code>proxy_pass</code> och <code>Upgrade</code>-headers f&ouml;r <code>/ws</code>-pathen.</p>
+    </div>
+
+    <div class="tip-card">
+        <h3>&#129302; Steg 3: Claude Code g&ouml;r jobbet</h3>
+        <p>H&auml;r &auml;r det magiska. Ist&auml;llet f&ouml;r att skriva all kod sj&auml;lv promptade jag <strong>Claude Code</strong> att bygga hela projektet. Jag beskrev vad jag ville ha och Claude skrev koden, skapade filerna och laddade upp dem till servern via SSH.</p>
+        <p>Det h&auml;r &auml;r ungef&auml;r prompten jag b&ouml;rjade med:</p>
+    </div>
+
+    <div class="claude-prompt">
+        <div class="prompt-label">Min prompt till Claude Code</div>
+<pre><span class="user">Bj&ouml;rn:</span>
+Jag vill bygga en demo f&ouml;r 46elks som visar r&ouml;st-API:et.
+Konceptet: en fejkad pizzeria d&auml;r man ringer ett nummer
+och en AI tar ens best&auml;llning.
+
+Jag beh&ouml;ver:
+1. En WebSocket-server (Python) som tar emot samtal fr&aring;n
+   46elks och bridgar till OpenAI Realtime API
+2. En Flask-app med pizzak&ouml;k d&auml;r pizzerian ser ordrar
+3. SMS-bekr&auml;ftelse via 46elks n&auml;r ordern &auml;r klar
+4. En tracking-sida som kunden f&aring;r i SMSet
+
+Servern &auml;r p&aring; root@din-server.hetzner.com
+46elks API-credentials och OpenAI-nyckel l&auml;gger jag i .env
+
+Bygg allt och deploya p&aring; servern.
+
+<span class="ai">Claude:</span>
+Jag b&ouml;rjar med att s&auml;tta upp projektstrukturen...
+<span class="ai">[Claude skapar menu.py, voice_agent.py, web_app.py,
+ templates, systemd-services, nginx-config
+ &mdash; och laddar upp allt via SSH]</span></pre>
+    </div>
+
+    <div class="tip-card" style="margin-top:1.5rem">
+        <h3>&#128161; Steg 4: Iterera med Claude Code</h3>
+        <p>Det fina med Claude Code &auml;r att du itererar snabbt. N&auml;r grunderna var p&aring; plats fortsatte jag prompta:</p>
+        <ul>
+            <li><em>&quot;L&auml;gg till s&aring; man kan markera ingredienser som slut&quot;</em> &mdash; Claude byggde ett helt ingredienssystem med modaler och automatisk cascade till pizzor</li>
+            <li><em>&quot;G&ouml;r s&aring; r&ouml;sten s&auml;ger vilka pizzor som inte g&aring;r att best&auml;lla&quot;</em> &mdash; Claude la till dynamiska instruktioner som h&auml;mtas vid varje samtal</li>
+            <li><em>&quot;Bygg en landningssida som f&ouml;rklarar 46elks&quot;</em> &mdash; Claude byggde hela sidan med SEO, structured data och responsiv design</li>
+            <li><em>&quot;Ordrar f&ouml;rsvinner inte efter 15 min&quot;</em> &mdash; Claude hittade buggen (timers d&ouml;r vid restart) och fixade med startup-rescheduling</li>
+        </ul>
+        <p>Varje &auml;ndring: beskriv vad du vill &rarr; Claude skriver koden &rarr; laddar upp via SSH &rarr; startar om tj&auml;nsten. Hela loopen tar n&aring;gra minuter.</p>
+    </div>
+
+    <div class="tip-card">
+        <h3>&#128268; Steg 5: Koppla ihop allt</h3>
+        <p>N&auml;r koden &auml;r p&aring; plats beh&ouml;ver du:</p>
+        <ul>
+            <li><strong>46elks-konto</strong> &mdash; Skapa p&aring; <a href="https://46elks.com/register/pizzanummer/pizzanummer" style="color:var(--accent)">46elks.com</a>, allokera ett nummer</li>
+            <li><strong>OpenAI API-nyckel</strong> &mdash; F&ouml;r Realtime API (r&ouml;st-till-r&ouml;st)</li>
+            <li><strong>Peka numret</strong> &mdash; S&auml;tt <code>voice_start</code> till <code>wss://din-dom&auml;n.se/ws</code></li>
+            <li><strong>Systemd-services</strong> &mdash; S&aring; att b&aring;de Flask och WebSocket-servern startar automatiskt</li>
+        </ul>
+        <div class="cmd">
+<span class="cm"># Skapa systemd-services</span>
+<span class="kw">cat</span> &gt; /etc/systemd/system/pizza-voice.service &lt;&lt; <span class="str">EOF
+[Unit]
+Description=Pizza Voice Agent
+After=network.target
+
+[Service]
+WorkingDirectory=/home/pizza
+ExecStart=/home/pizza/venv/bin/python voice_agent.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF</span>
+
+<span class="kw">systemctl enable</span> pizza-voice pizza-web
+<span class="kw">systemctl start</span> pizza-voice pizza-web
+        </div>
+    </div>
+
+    <div class="tip-card">
+        <h3>&#127919; Mina viktigaste l&auml;rdomar</h3>
+        <ul>
+            <li><strong>B&ouml;rja enkelt.</strong> F&ouml;rsta versionen hade bara r&ouml;st + en order-lista. Drycker, ingredienshantering och tracking-sidan kom sen.</li>
+            <li><strong>Promptet &auml;r allt.</strong> Jag &auml;ndrade AI-promptet 10+ g&aring;nger. Sm&aring; ordval g&ouml;r stor skillnad &mdash; t.ex. &quot;h&aring;ll svaren korta, det &auml;r ett telefonsamtal&quot;.</li>
+            <li><strong>Testa genom att ringa.</strong> Det g&aring;r inte att simulera ett r&ouml;stsamtal &mdash; du m&aring;ste ringa p&aring; riktigt f&ouml;r att h&ouml;ra hur det l&aring;ter.</li>
+            <li><strong>Claude Code + SSH = superkraft.</strong> Jag satt p&aring; min Mac och Claude deployade direkt till servern. Ingen manuell filkopiering.</li>
+            <li><strong>Bygg menyn som data.</strong> Hela menyn ligger i en Python-fil. AI:n f&aring;r den som text i promptet. Enkelt att &auml;ndra utan att r&ouml;ra kod.</li>
+        </ul>
+    </div>
+
+    <div class="prompt-tip">
+        <strong>Total kostnad:</strong> Hetzner-server ~50 kr/m&aring;n + 46elks-samtal &amp; SMS (betala per anv&auml;ndning) + OpenAI Realtime API (~2 kr per samtal). Ingen fast avgift f&ouml;r 46elks.
+    </div>
+</div>
+
+<!-- ════ FAQ ════ -->
+<hr class="section-divider">
+<div class="info-section" id="faq">
+    <div class="section-label">Vanliga fr&aring;gor</div>
+    <h2>FAQ</h2>
+    <div class="faq-list">
+        <div class="faq-item">
+            <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+                <span>&Auml;r det h&auml;r en riktig pizzeria?</span>
+                <span class="faq-chevron">&#9660;</span>
+            </button>
+            <div class="faq-a"><p>Nej! Pizzanummer.se &auml;r en teknisk demo. Ingen pizza levereras. Syftet &auml;r att visa vad man kan bygga med 46elks r&ouml;st-API och OpenAI.</p></div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+                <span>Vad &auml;r 46elks?</span>
+                <span class="faq-chevron">&#9660;</span>
+            </button>
+            <div class="faq-a"><p>46elks &auml;r ett svenskt API f&ouml;r telefoni och SMS. Med n&aring;gra rader kod kan du ringa samtal, skicka SMS och bygga avancerade r&ouml;stapplikationer. &Ouml;ver 4000 f&ouml;retag anv&auml;nder 46elks.</p></div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+                <span>Kan jag bygga n&aring;got liknande sj&auml;lv?</span>
+                <span class="faq-chevron">&#9660;</span>
+            </button>
+            <div class="faq-a"><p>Absolut! Skapa ett gratis konto p&aring; <a href="https://46elks.com/register/pizzanummer/pizzanummer" style="color:var(--accent)">46elks.com</a>, allokera ett telefonnummer och koppla det till din WebSocket-server. Kombinera med OpenAI f&ouml;r AI-driven r&ouml;sthantering.</p></div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+                <span>Vad kostar det?</span>
+                <span class="faq-chevron">&#9660;</span>
+            </button>
+            <div class="faq-a"><p>Det &auml;r gratis att skapa ett 46elks-konto och testa. Du betalar bara f&ouml;r faktisk anv&auml;ndning &mdash; samtal och SMS. Inga bindningstider eller fast avgift.</p></div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+                <span>Vilka spr&aring;k st&ouml;ds?</span>
+                <span class="faq-chevron">&#9660;</span>
+            </button>
+            <div class="faq-a"><p>R&ouml;stassistenten i denna demo pratar svenska. Men 46elks r&ouml;st-API &auml;r spr&aring;kneutralt &mdash; det vidarebefordrar ljud. AI-modellen (OpenAI) st&ouml;der 50+ spr&aring;k.</p></div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+                <span>Hur fungerar WebSocket-r&ouml;st?</span>
+                <span class="faq-chevron">&#9660;</span>
+            </button>
+            <div class="faq-a"><p>46elks skickar samtalets ljud som r&aring; PCM-data &ouml;ver en WebSocket-anslutning till din server. Du kan processa, spela upp eller bridga ljudet i realtid &mdash; perfekt f&ouml;r AI-r&ouml;stassistenter.</p></div>
+        </div>
+    </div>
+</div>
+
+<!-- ════ CTA ════ -->
+<div class="cta-section">
+    <h2>Bygg din egen r&ouml;stl&ouml;sning</h2>
+    <p>Skapa ett gratis 46elks-konto och b&ouml;rja bygga. Telefonnummer, r&ouml;st-API och SMS &mdash; allt via ett enkelt API.</p>
+    <div class="cta-buttons">
+        <a href="https://46elks.com/register/pizzanummer/pizzanummer" class="cta-btn-primary" target="_blank" rel="noopener">Skapa konto gratis &rarr;</a>
+        <a href="https://46elks.com/docs" class="cta-btn-secondary" target="_blank" rel="noopener">L&auml;s dokumentationen</a>
+    </div>
+</div>
+
+<!-- ════ RELATERAT ════ -->
+<div class="info-section" id="relaterat">
+    <div class="section-label">Relaterade demos</div>
+    <h2>Fler demos fr&aring;n 46elks</h2>
+    <div class="related-grid">
+        <a href="https://aitelefonnummer.se" class="related-card" target="_blank" rel="noopener">
+            <h3>aitelefonnummer.se</h3>
+            <p>AI-telefonnummer f&ouml;r f&ouml;retag &mdash; automatisk kundtj&auml;nst, m&ouml;tesbokning och samtalstranskription.</p>
+        </a>
+        <a href="https://smsnummer.se" class="related-card" target="_blank" rel="noopener">
+            <h3>smsnummer.se</h3>
+            <p>Skicka och ta emot SMS programmatiskt med 46elks SMS-API.</p>
+        </a>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-left">En demo av <a href="https://46elks.com" target="_blank" rel="noopener">46elks AB</a></div>
+    <div class="footer-links">
+        <a href="https://46elks.com/docs" target="_blank" rel="noopener">Dokumentation</a>
+        <a href="https://46elks.com/register/pizzanummer/pizzanummer" target="_blank" rel="noopener">Skapa konto</a>
+    </div>
+</footer>
+
+<!-- ════ Modals ════ -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+        <h3 id="modal-title"></h3>
+        <p id="modal-desc"></p>
+        <div id="modal-reason-wrap">
+            <input type="text" id="modal-reason" placeholder="Anledning (valfritt, t.ex. 'Slut p&aring; &auml;lgfil&eacute;')">
+        </div>
+        <div class="modal-actions" id="modal-actions"></div>
+    </div>
+</div>
+<div class="modal-overlay" id="change-modal" onclick="closeChangeModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+        <h3 id="change-modal-title">&Auml;ndra order</h3>
+        <p>Beskriv vad som beh&ouml;ver &auml;ndras &mdash; kunden f&aring;r ett SMS och ser anteckningen.</p>
+        <input type="text" id="change-note-input" placeholder="T.ex. 'Slut p&aring; kantareller, ring och byt pizza'">
+        <div class="modal-actions">
+            <button class="modal-btn-cancel" onclick="closeChangeModal()">Avbryt</button>
+            <button class="modal-btn-change" onclick="submitChangeOrder()">Skicka &auml;ndring</button>
+        </div>
+    </div>
+</div>
+<div class="modal-overlay" id="ing-modal" onclick="closeIngModal(event)">
+    <div class="modal wide" onclick="event.stopPropagation()">
+        <h3>Ingredienser</h3>
+        <p>Markera ingredienser som &auml;r slut &mdash; alla pizzor med den ingrediensen markeras automatiskt som ej tillg&auml;ngliga.</p>
+        <div class="ing-list" id="ing-list"></div>
+        <div class="modal-actions" style="margin-top:1rem">
+            <button class="modal-btn-cancel" onclick="closeIngModal()">St&auml;ng</button>
         </div>
     </div>
 </div>
 
 <script>
+// Theme toggle
+function getPreferredTheme(){const s=localStorage.getItem('theme');if(s)return s;return window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'}
+function setTheme(t){document.documentElement.setAttribute('data-theme',t);localStorage.setItem('theme',t);const b=document.querySelector('.theme-toggle');if(b)b.textContent=t==='dark'?'\u2600\uFE0F':'\uD83C\uDF19'}
+function toggleTheme(){const c=document.documentElement.getAttribute('data-theme')||getPreferredTheme();setTheme(c==='dark'?'light':'dark')}
+setTheme(getPreferredTheme());
+window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',e=>{if(!localStorage.getItem('theme'))setTheme(e.matches?'dark':'light')});
+
 const MENU = [
-    {nr:1, name:"Margareta", desc:"Ost", price:100, cat:"Standard"},
-    {nr:2, name:"Vesuvio", desc:"Skinka", price:100, cat:"Standard"},
-    {nr:3, name:"Paula", desc:"Champinjoner, köttfärssås", price:100, cat:"Standard"},
-    {nr:4, name:"Capricciosa", desc:"Skinka, champinjoner", price:100, cat:"Standard"},
-    {nr:5, name:"Altonno", desc:"Tonfisk", price:100, cat:"Standard"},
-    {nr:6, name:"Hawaii", desc:"Skinka, ananas", price:100, cat:"Standard"},
-    {nr:7, name:"Buruna", desc:"Champinjoner", price:100, cat:"Standard"},
-    {nr:8, name:"Bussola", desc:"Skinka, räkor", price:100, cat:"Standard"},
-    {nr:9, name:"Opera", desc:"Skinka, tonfisk", price:100, cat:"Standard"},
-    {nr:10, name:"Orientale", desc:"Köttfärssås", price:100, cat:"Standard"},
-    {nr:11, name:"Vera", desc:"Skinka, färska tomater", price:100, cat:"Standard"},
-    {nr:12, name:"Tropicana", desc:"Skinka, ananas, banan, curry", price:105, cat:"Standard"},
-    {nr:13, name:"Marinara", desc:"Räkor, musslor", price:105, cat:"Standard"},
-    {nr:14, name:"Gondola", desc:"Räkor, champinjoner", price:105, cat:"Standard"},
-    {nr:15, name:"Bussola Special", desc:"Skinka, räkor, ananas", price:105, cat:"Standard"},
-    {nr:16, name:"Campagnola", desc:"Salami, lök", price:105, cat:"Standard"},
-    {nr:17, name:"Balanzone", desc:"Skinka, salami", price:105, cat:"Standard"},
-    {nr:18, name:"Pazza", desc:"Räkor, champinjoner, paprika, lök", price:105, cat:"Standard"},
-    {nr:19, name:"Vegetale", desc:"Champinjoner, paprika, oliver, lök", price:105, cat:"Standard"},
-    {nr:20, name:"Vegetale Special", desc:"Champinjoner, fårost, paprika, oliver, lök", price:105, cat:"Standard"},
-    {nr:21, name:"Diabolo", desc:"Skinka, köttfärssås", price:105, cat:"Standard"},
-    {nr:22, name:"Primavera", desc:"Bacon, ägg, lök", price:105, cat:"Standard"},
-    {nr:23, name:"Romana", desc:"Skinka, champinjoner, räkor", price:105, cat:"Standard"},
-    {nr:24, name:"Orientale Special", desc:"Champinjoner, köttfärssås, ägg", price:105, cat:"Standard"},
-    {nr:25, name:"Rimini", desc:"Skinka, räkor, crab-fish", price:105, cat:"Standard"},
-    {nr:26, name:"Bolognese", desc:"Skinka, champinjoner, köttfärssås", price:105, cat:"Standard"},
-    {nr:27, name:"Venezia", desc:"Skinka, räkor, tonfisk", price:105, cat:"Standard"},
-    {nr:28, name:"Pronto", desc:"Skinka, fefferoni, lök", price:105, cat:"Standard"},
-    {nr:29, name:"Carbonara", desc:"Skinka, champinjoner, paprika, lök", price:105, cat:"Standard"},
-    {nr:30, name:"La Gonzola", desc:"Skinka, ädelost", price:105, cat:"Standard"},
-    {nr:31, name:"Calzone", desc:"Inbakad, skinka", price:110, cat:"Inbakad"},
-    {nr:32, name:"Calzone Special", desc:"Inbakad, skinka, räkor", price:110, cat:"Inbakad"},
-    {nr:33, name:"La Polarde", desc:"Inbakad, skinka, ädelost, crème fraiche", price:110, cat:"Inbakad"},
-    {nr:34, name:"Sorrento", desc:"Köttfärssås, lök, fefferoni, tomater, stark sås", price:115, cat:"Special"},
-    {nr:35, name:"Marco Polo", desc:"Skinka, räkor, champinjoner, tonfisk", price:115, cat:"Special"},
-    {nr:36, name:"Quattro Stagioni", desc:"Skinka, räkor, champinjoner, musslor, kronärtskocka", price:115, cat:"Special"},
-    {nr:37, name:"Las Vegas", desc:"Skinka, champinjoner, bacon, ägg, lök", price:115, cat:"Special"},
-    {nr:38, name:"Fantasia", desc:"Skinka, salami, bacon, lök", price:115, cat:"Special"},
-    {nr:39, name:"Maxhot", desc:"Stark korv, champinjoner, fefferoni, lök, stark sås", price:115, cat:"Special"},
-    {nr:40, name:"Frutti di Mare", desc:"Räkor, tonfisk, musslor, crab-fish", price:115, cat:"Special"},
-    {nr:41, name:"Mamma Mia", desc:"Köttfärssås, lök, fefferoni, bearnaisesås", price:115, cat:"Special"},
-    {nr:42, name:"La Casa", desc:"Skinka, räkor, champinjoner, köttfärssås", price:115, cat:"Special"},
-    {nr:43, name:"Caruso", desc:"Kebabkött, champinjoner, vitlök", price:115, cat:"Kebab"},
-    {nr:44, name:"Riviera", desc:"Kebabkött, champinjoner, tomater, fefferoni", price:115, cat:"Kebab"},
-    {nr:45, name:"San Remo", desc:"Kebabkött, tomater, stark sås", price:115, cat:"Kebab"},
-    {nr:46, name:"Bella", desc:"Kebabkött, svamp, vitlök, bearnaise, fefferoni", price:115, cat:"Kebab"},
-    {nr:47, name:"Verona", desc:"Kebabkött, lök, tomater, paprika, fefferoni", price:115, cat:"Kebab"},
-    {nr:48, name:"Regina", desc:"Kyckling, ananas, curry", price:115, cat:"Kyckling"},
-    {nr:49, name:"Ancona", desc:"Kyckling, banan, curry", price:115, cat:"Kyckling"},
-    {nr:50, name:"Blanca", desc:"Kyckling, bearnaisesås", price:115, cat:"Kyckling"},
-    {nr:51, name:"Udine", desc:"Kyckling, champinjoner, vitlök, bearnaisesås, fefferoni", price:115, cat:"Kyckling"},
-    {nr:52, name:"Roma", desc:"Fläskfilé, bearnaisesås", price:120, cat:"Fläskfilé"},
-    {nr:53, name:"Farma", desc:"Fläskfilé, champinjoner, lök, fefferoni", price:120, cat:"Fläskfilé"},
-    {nr:54, name:"La Luna", desc:"Fläskfilé, champinjoner, vitlök, bearnaisesås", price:120, cat:"Fläskfilé"},
-    {nr:55, name:"Napoli", desc:"Fläskfilé, bacon, ägg, champinjoner", price:120, cat:"Fläskfilé"},
-    {nr:56, name:"Ciao Ciao", desc:"Oxfilé, bearnaisesås", price:130, cat:"Oxfilé"},
-    {nr:57, name:"Madonna", desc:"Oxfilé, champinjoner, lök, fefferoni", price:130, cat:"Oxfilé"},
-    {nr:58, name:"Huset Special", desc:"Oxfilé, champinjoner, vitlök, bearnaisesås", price:130, cat:"Oxfilé"},
-    {nr:59, name:"Malaja", desc:"Oxfilé, lök, tomater, svartpeppar", price:130, cat:"Oxfilé"},
-    {nr:60, name:"La Bamba", desc:"Oxfilé, bacon, ägg, champinjoner, fefferoni", price:140, cat:"Oxfilé"},
-    {nr:61, name:"Bergmans Special", desc:"Oxfilé, köttfärssås, skinka, räkor, fefferoni, bearnaisesås", price:140, cat:"Oxfilé"},
-    {nr:62, name:"Ali Baba", desc:"Oxfilé, ädelost, färska tomater, bearnaisesås", price:140, cat:"Oxfilé"},
-    {nr:63, name:"Lady Diana", desc:"Oxfilé, skinka, lök, färska tomater, vitlök, bearnaisesås", price:140, cat:"Oxfilé"},
-    {nr:64, name:"Atlantic", desc:"Oxfilé, ädelost, lök, svamp, bearnaisesås", price:140, cat:"Oxfilé"},
-    {nr:65, name:"Dormiro", desc:"Oxfilé, svamp, banan, curry, bearnaisesås", price:140, cat:"Oxfilé"},
-    {nr:66, name:"Mexicana", desc:"Skinka, tomater, tacosås, taco kryddmix, jalapeño", price:115, cat:"Mexikansk"},
-    {nr:67, name:"Monterrey", desc:"Köttfärssås, tacosås, taco kryddmix, vitlök, stark sås", price:115, cat:"Mexikansk"},
-    {nr:68, name:"Sierra", desc:"Köttfärssås, champinjoner, jalapeño, taco kryddmix, bearnaisesås", price:115, cat:"Mexikansk"},
-    {nr:69, name:"Mérida", desc:"Kebab, fefferoni, jalapeño, taco kryddmix, bearnaisesås", price:115, cat:"Mexikansk"},
-    {nr:70, name:"Mexikansk Special", desc:"Kyckling, jalapeño, taco kryddmix, tacosås", price:115, cat:"Mexikansk"},
-    {nr:71, name:"Acapulco", desc:"Räkor, köttfärs, jalapeño, lök, tacosås, vitlökssås", price:115, cat:"Mexikansk"},
+    {nr:1,name:"Älgareta",desc:"Älgmjölksmozzarella",price:46,cat:"Klassisk"},
+    {nr:2,name:"Älguvio",desc:"Rökt älgskinka",price:46,cat:"Klassisk"},
+    {nr:3,name:"Skogsgläntan",desc:"Kantareller, Karljohansvamp, Timjan",price:46,cat:"Klassisk"},
+    {nr:4,name:"Kronhjorten",desc:"Rökt älgskinka, kantareller",price:46,cat:"Klassisk"},
+    {nr:5,name:"Björkeby",desc:"Björkskott, Rödlök, Getost, Honung",price:46,cat:"Klassisk"},
+    {nr:6,name:"Midnattssol",desc:"Hjortron, Chevreost, Rostad lök",price:46,cat:"Klassisk"},
+    {nr:7,name:"Tallkotten",desc:"Kantareller, trattkantareller, tallskott",price:46,cat:"Klassisk"},
+    {nr:8,name:"Myrstacken",desc:"Skogssvamp, Lingon, Pinjenötter, Gräddsås",price:46,cat:"Klassisk"},
+    {nr:9,name:"Vildmarken",desc:"Rökt älgskinka, torkat älgkött",price:46,cat:"Klassisk"},
+    {nr:10,name:"Mossbelägget",desc:"Renlav, Spenat, Vitlök, Ricotta",price:46,cat:"Klassisk"},
+    {nr:11,name:"Älgjägaren",desc:"Älgfärs, jalapeño, rödlök, stark sås",price:46,cat:"Jakt"},
+    {nr:12,name:"Hornkronan",desc:"Torkat älgkött, ädelost, valnötter",price:46,cat:"Jakt"},
+    {nr:13,name:"Skogsbrynet",desc:"Kantareller, Karljohansvamp, Gräddsås",price:46,cat:"Jakt"},
+    {nr:14,name:"Drevkarlen",desc:"Rökt älgskinka, bacon, ägg, lök",price:46,cat:"Jakt"},
+    {nr:15,name:"Passet",desc:"Älgfärs, paprika, lök, jalapeño",price:46,cat:"Jakt"},
+    {nr:16,name:"Lövsprickningen",desc:"Asplöv, Sparris, Citron, Parmesan",price:46,cat:"Jakt"},
+    {nr:17,name:"Hundbollen",desc:"Älgkorv, senap, rostad lök",price:46,cat:"Jakt"},
+    {nr:18,name:"Tornet",desc:"Rökt älgskinka, kantareller, bearnaisesås",price:46,cat:"Jakt"},
+    {nr:19,name:"Grantoppen",desc:"Skogssvamp, Tallbarr, Timjan, Tryffelolja",price:46,cat:"Jakt"},
+    {nr:20,name:"Dimman",desc:"Getost, Honung, Rosmarin, Valnötter",price:46,cat:"Jakt"},
+    {nr:21,name:"Älgzonen",desc:"Inbakad, rökt älgskinka, kantareller",price:46,cat:"Inbakad"},
+    {nr:22,name:"Kolvaktaren",desc:"Inbakad, Skogssvamp, Videskott, Lök, Stark sås",price:46,cat:"Inbakad"},
+    {nr:23,name:"Skogshyddans",desc:"Inbakad, Ädelost, Lingon, Valnötter",price:46,cat:"Inbakad"},
+    {nr:24,name:"Kungsälgen",desc:"Älgfilé, bearnaisesås, rostad lök",price:146,cat:"Älgfilé"},
+    {nr:25,name:"Älgtjuren",desc:"Älgfilé, kantareller, vitlök, gräddsås",price:146,cat:"Älgfilé"},
+    {nr:26,name:"Kronviltet",desc:"Älgfilé, ädelost, valnötter, honung",price:146,cat:"Älgfilé"},
+    {nr:27,name:"Storskogen",desc:"Älgfilé, trattkantareller, tallskott, timjan, tryffelolja",price:146,cat:"Älgfilé"},
+    {nr:28,name:"Myrkronan",desc:"Älgfilé, lingon, rödlök, pepparrot",price:146,cat:"Älgfilé"},
+    {nr:29,name:"Nordstjärnan",desc:"Älgfilé, rökt älgskinka, skogssvamp, bearnaisesås",price:146,cat:"Älgfilé"},
+    {nr:30,name:"Vildstigens",desc:"Älgfilé, bacon, ägg, jalapeño, stark sås",price:146,cat:"Älgfilé"},
+    {nr:31,name:"Fullträffen",desc:"Älgfärs, torkat älgkött, kantareller, lingonbearnaise",price:146,cat:"Special"},
+    {nr:32,name:"Älgkalven",desc:"Rökt älgskinka, älgfärs, mozzarella, tryffelolja",price:146,cat:"Special"},
+    {nr:33,name:"Hovmästaren",desc:"Älgfilé, räkor, sparris, hollandaisesås",price:146,cat:"Special"},
+    {nr:34,name:"Vinterstugan",desc:"Torkat älgkött, getost, rostade pinjenötter, honung",price:146,cat:"Special"},
+    {nr:35,name:"Midvinterblotet",desc:"Älgkorv, surkål, senap, rostad potatis",price:146,cat:"Special"},
+    {nr:36,name:"Björniden",desc:"Älgfärs, chorizo, jalapeño, cheddar, BBQ-sås",price:146,cat:"Special"},
+    {nr:37,name:"Trollstigen",desc:"Rökt älgskinka, gorgonzola, päron, valnötter",price:146,cat:"Special"},
+    {nr:38,name:"Frostbiten",desc:"Torkat älgkött, pepparrot, ruccola, parmesan",price:146,cat:"Special"},
+    {nr:39,name:"Sapmi",desc:"Rökt älgkött, renskav, renlav, mesost, lingon",price:146,cat:"Norrland"},
+    {nr:40,name:"Jokkmansen",desc:"Älgfärs, rökt ren, kantareller, gräddsås",price:146,cat:"Norrland"},
+    {nr:41,name:"Polcirkeln",desc:"Torkat älgkött, hjortronkräm, renlav, getost",price:146,cat:"Norrland"},
+    {nr:42,name:"Norrskenet",desc:"Älgfilé, blåbärsris, timjan, chevreost",price:146,cat:"Norrland"},
+    {nr:43,name:"Lappstansen",desc:"Rökt älgskinka, tunnbröd, smör, messmör",price:146,cat:"Norrland"},
+    {nr:44,name:"46:an",desc:"Alla köttyper: älgfilé, älgfärs, torkat älgkött, rökt skinka",price:146,cat:"Legendarisk"},
+    {nr:45,name:"Skogens Konung",desc:"Dubbel älgfilé, tryffel, 24 mån lagrad ost, portvin",price:146,cat:"Legendarisk"},
+    {nr:46,name:"Elken",desc:"Husets special: älgfilé, tallskott, kantareller, lingon, bearnaisesås",price:146,cat:"Legendarisk"},
 ];
+const EXTRAS = [
+    {id:"drink_forest_cola",name:"Tjärncola 33cl",price:26,cat:"Dryck",emoji:"\ud83c\udf32"},
+    {id:"drink_forest_orange",name:"Tjärnapelsin 33cl",price:26,cat:"Dryck",emoji:"\ud83c\udf4a"},
+    {id:"drink_forest_citron",name:"Tjärncitron 33cl",price:26,cat:"Dryck",emoji:"\ud83c\udf4b"},
+    {id:"drink_water",name:"Källvatten 50cl",price:16,cat:"Dryck",emoji:"\ud83d\udca7"},
+    {id:"drink_elk_herb",name:"Älgörtssaft 33cl",price:46,cat:"Dryck",emoji:"\ud83c\udf3f"},
+    {id:"drink_forest_berry",name:"Skogsbärsdricka 33cl",price:36,cat:"Dryck",emoji:"\ud83c\udf47"},
+    {id:"drink_birch_sap",name:"Björksav 33cl",price:36,cat:"Dryck",emoji:"\ud83c\udf33"},
+    {id:"drink_lingon_juice",name:"Lingondricka 33cl",price:26,cat:"Dryck",emoji:"\ud83c\udf42"},
+    {id:"salad_forest",name:"Skogssallad med lingon",price:46,cat:"Sallad",emoji:"\ud83e\udd57"},
+    {id:"salad_elk",name:"Älgsallad med torkat kött",price:46,cat:"Sallad",emoji:"\ud83e\udd6c"},
+    {id:"dip_garlic",name:"Vitlökssås",price:16,cat:"Tillbehör",emoji:"\ud83e\uddc4"},
+    {id:"dip_bearnaise",name:"Bearnaisesås",price:16,cat:"Tillbehör",emoji:"\ud83e\udd5b"},
+    {id:"dip_lingon",name:"Lingonbearnaise",price:16,cat:"Tillbehör",emoji:"\ud83c\udf42"},
+    {id:"bread_tunnbrod",name:"Tunnbröd med smör",price:26,cat:"Tillbehör",emoji:"\ud83c\udf5e"},
+];
+const CATEGORIES=["Klassisk","Jakt","Inbakad","Älgfilé","Special","Norrland","Legendarisk"];
+const STATUS_LABELS={new:"NY",oven:"I UGNEN",ready:"KLAR",picked:"HÄMTAD",change:"ÄNDRING"};
+let unavailableMap={};
 
-const CATEGORIES = ["Standard","Inbakad","Special","Kebab","Kyckling","Fläskfilé","Oxfilé","Mexikansk"];
-
-const STATUS_LABELS = {
-    new: "NY",
-    oven: "I UGNEN",
-    ready: "KLAR",
-    picked: "HÄMTAD",
-    change: "ÄNDRING",
-};
-
-function renderMenu() {
-    const el = document.getElementById("menu");
-    let html = "";
-    for (const cat of CATEGORIES) {
-        const pizzas = MENU.filter(p => p.cat === cat);
-        html += `<div class="menu-category"><h3>${cat}pizzor</h3>`;
-        html += pizzas.map(p => `
-            <div class="pizza-item">
-                <span class="pizza-nr">${p.nr}.</span>
-                <span class="pizza-name">${p.name}</span>
-                <span class="pizza-price">${p.price} kr</span>
-                <span class="pizza-desc">${p.desc}</span>
-            </div>
-        `).join("");
-        html += `</div>`;
-    }
-    el.innerHTML = html;
+function renderExtras(){
+    const drinks=EXTRAS.filter(e=>e.cat==="Dryck");
+    const salads=EXTRAS.filter(e=>e.cat==="Sallad");
+    const sides=EXTRAS.filter(e=>e.cat==="Tillbehör");
+    document.getElementById("drinks").innerHTML=drinks.map(e=>`<div class="extra-item"><span class="extra-emoji">${e.emoji}</span><span class="extra-name">${e.name}</span><span class="extra-price">${e.price} kr</span></div>`).join("");
+    document.getElementById("salads").innerHTML=salads.map(e=>`<div class="extra-item"><span class="extra-emoji">${e.emoji}</span><span class="extra-name">${e.name}</span><span class="extra-price">${e.price} kr</span></div>`).join("");
+    document.getElementById("sides").innerHTML=sides.map(e=>`<div class="extra-item"><span class="extra-emoji">${e.emoji}</span><span class="extra-name">${e.name}</span><span class="extra-price">${e.price} kr</span></div>`).join("");
 }
 
-function renderOrders(orders) {
-    const el = document.getElementById("orders");
-    const filtered = filterOrders(orders);
-    if (!filtered.length) {
-        const msg = !orders.length ? "Inga beställningar ännu<br>Ring och beställ!" : "Inga ordrar med denna status";
-        el.innerHTML = `<div class="no-orders"><span class="icon">📋</span>${msg}</div>`;
-        return;
+function renderMenu(){
+    const el=document.getElementById("menu");
+    let html="";
+    for(const cat of CATEGORIES){
+        const pizzas=MENU.filter(p=>p.cat===cat);
+        html+=`<div class="menu-category"><h3>${cat}pizzor</h3>`;
+        html+=pizzas.map(p=>{
+            const ua=unavailableMap[p.nr];
+            const cls=ua!==undefined?"pizza-item unavailable":"pizza-item";
+            const toggleCls=ua!==undefined?"pizza-toggle off":"pizza-toggle";
+            const toggleIcon=ua!==undefined?"&#x2716;":"&#x2714;";
+            const toggleTitle=ua!==undefined?"Gör tillgänglig":"Markera ej tillgänglig";
+            return `<div class="${cls}"><span class="pizza-nr">${p.nr}.</span><span class="pizza-name">${p.name}${ua!==undefined?'<span class="unavail-badge">EJ TILLGÄNGLIG</span>':''}</span><span class="pizza-price">${p.price} kr</span><button class="${toggleCls}" title="${toggleTitle}" onclick="toggleAvailability(${p.nr},'${p.name.replace(/'/g,"\\'")}')">${toggleIcon}</button><span class="pizza-desc">${p.desc}</span>${ua?`<span class="unavail-reason">${ua}</span>`:''}</div>`;
+        }).join("");
+        html+=`</div>`;
     }
-    el.innerHTML = filtered.map(o => {
-        const items = o.items.map(i => `${i.qty}\u00d7 ${i.name}${i.glutenfri ? ' (GF)' : ''}`).join(", ");
-        const time = new Date(o.created_at).toLocaleTimeString("sv-SE", {hour:"2-digit", minute:"2-digit"});
-        const buttons = getButtons(o);
-        return `
-            <div class="order-card status-${o.status}">
-                <div class="order-header">
-                    <span class="order-id"><span class="nr">#${o.id}</span> ${o.customer_name}</span>
-                    <span class="order-status ${o.status}">${STATUS_LABELS[o.status] || o.status}</span>
-                </div>
-                <div class="order-items">${items}</div>
-                <div class="order-meta">
-                    <span>${o.total_price} kr</span>
-                    <span>${time}</span>
-                    ${o.customer_phone ? `<span>${o.customer_phone}</span>` : ''}
-                </div>
-                <div class="order-actions">${buttons}</div>
-            </div>
-        `;
+    el.innerHTML=html;
+}
+
+let modalPizzaNr=null;
+function toggleAvailability(nr,name){
+    modalPizzaNr=nr;
+    const isUnavailable=unavailableMap[nr]!==undefined;
+    const overlay=document.getElementById("modal-overlay");
+    const title=document.getElementById("modal-title");
+    const desc=document.getElementById("modal-desc");
+    const reasonWrap=document.getElementById("modal-reason-wrap");
+    const actions=document.getElementById("modal-actions");
+    const reasonInput=document.getElementById("modal-reason");
+    if(isUnavailable){
+        title.textContent=`${nr}. ${name}`;
+        desc.textContent="Denna pizza är markerad som ej tillgänglig. Vill du göra den tillgänglig igen?";
+        reasonWrap.style.display="none";
+        actions.innerHTML=`<button class="modal-btn-cancel" onclick="closeModal()">Avbryt</button><button class="modal-btn-avail" onclick="markAvailable()">Gör tillgänglig</button>`;
+    }else{
+        title.textContent=`${nr}. ${name}`;
+        desc.textContent="Markera som ej tillgänglig? Rösten berättar för kunder att den inte kan beställas.";
+        reasonWrap.style.display="";
+        reasonInput.value="";
+        actions.innerHTML=`<button class="modal-btn-cancel" onclick="closeModal()">Avbryt</button><button class="modal-btn-unavail" onclick="markUnavailable()">Ej tillgänglig</button>`;
+    }
+    overlay.classList.add("open");
+    if(!isUnavailable)setTimeout(()=>reasonInput.focus(),100);
+}
+function closeModal(e){if(e&&e.target!==e.currentTarget)return;document.getElementById("modal-overlay").classList.remove("open");modalPizzaNr=null}
+async function markUnavailable(){
+    const reason=document.getElementById("modal-reason").value.trim();
+    try{await fetch(`/api/unavailable/${modalPizzaNr}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({reason})});unavailableMap[modalPizzaNr]=reason;renderMenu()}catch(e){console.error(e)}
+    closeModal();
+}
+async function markAvailable(){
+    try{await fetch(`/api/unavailable/${modalPizzaNr}`,{method:"DELETE"});delete unavailableMap[modalPizzaNr];renderMenu()}catch(e){console.error(e)}
+    closeModal();
+}
+async function fetchUnavailable(){
+    try{const resp=await fetch("/api/unavailable");const items=await resp.json();unavailableMap={};items.forEach(i=>{unavailableMap[i.pizza_nr]=i.reason});renderMenu()}catch(e){console.error(e)}
+}
+
+function renderOrders(orders){
+    const el=document.getElementById("orders");
+    const filtered=filterOrders(orders);
+    if(!filtered.length){
+        const msg=!orders.length?"Inga beställningar ännu<br>Ring och beställ!":"Inga ordrar med denna status";
+        el.innerHTML=`<div class="no-orders"><span class="icon">&#129420;</span>${msg}</div>`;return;
+    }
+    el.innerHTML=filtered.map(o=>{
+        const items=o.items.map(i=>{const qty=i.qty?`${i.qty} st `:'';return `${qty}${i.name}`}).join(", ");
+        const time=new Date(o.created_at).toLocaleTimeString("sv-SE",{hour:"2-digit",minute:"2-digit"});
+        const buttons=getButtons(o);
+        const noteHtml=(o.status==='change'&&o.change_note)?`<div class="order-change-note">${o.change_note}</div>`:'';
+        return `<div class="order-card status-${o.status}"><div class="order-header"><span class="order-id"><span class="nr">#${o.id}</span> ${o.customer_name}</span><span class="order-status ${o.status}">${STATUS_LABELS[o.status]||o.status}</span></div>${noteHtml}<div class="order-items">${items}</div><div class="order-meta"><span>${o.total_price} kr</span><span>${time}</span></div><div class="order-actions">${buttons}</div></div>`;
     }).join("");
 }
-
-function getButtons(order) {
-    const s = order.status;
-    const btns = [];
-    if (s === "new") {
-        btns.push(`<button class="btn-oven" onclick="updateOrder(this,${order.id},'oven')">I ugnen</button>`);
-    }
-    if (s === "new" || s === "oven") {
-        btns.push(`<button class="btn-ready" onclick="updateOrder(this,${order.id},'ready')">Klar att hämta</button>`);
-    }
-    if (s === "ready") {
-        btns.push(`<button class="btn-picked" onclick="updateOrder(this,${order.id},'picked')">Upphämtad</button>`);
-    }
-    if (s === "new" || s === "oven" || s === "change") {
-        btns.push(`<button class="btn-change" onclick="updateOrder(this,${order.id},'change')">Ändra order</button>`);
-    }
-    if (s !== "picked") {
-        btns.push(`<button class="btn-cancel" onclick="confirmCancel(this,${order.id})">Avbeställ</button>`);
-    }
+function getButtons(order){
+    const s=order.status;const btns=[];
+    if(s==="new")btns.push(`<button class="btn-oven" onclick="updateOrder(this,${order.id},'oven')">I ugnen</button>`);
+    if(s==="new"||s==="oven")btns.push(`<button class="btn-ready" onclick="updateOrder(this,${order.id},'ready')">Klar att hämta</button>`);
+    if(s==="ready")btns.push(`<button class="btn-picked" onclick="updateOrder(this,${order.id},'picked')">Upphämtad</button>`);
+    if(s==="new"||s==="oven")btns.push(`<button class="btn-change" onclick="openChangeModal(${order.id},'${order.customer_name.replace(/'/g,"\\'")}')">Ändra order</button>`);
+    if(s!=="picked")btns.push(`<button class="btn-cancel" onclick="confirmCancel(this,${order.id})">Avbeställ</button>`);
     return btns.join("");
 }
+let updating=false;
+async function updateOrder(btn,id,action){
+    if(updating)return;updating=true;btn.disabled=true;btn.textContent="...";
+    try{await fetch(`/api/orders/${id}/${action}`,{method:"POST"});await fetchOrders()}catch(e){console.error(e)}finally{updating=false}
+}
+function confirmCancel(btn,id){if(confirm("Vill du avbeställa denna order?"))updateOrder(btn,id,"cancel")}
+let currentFilter="active";let allOrders=[];
+function setFilter(f){currentFilter=f;document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));document.querySelector(`[data-filter="${f}"]`).classList.add("active");renderOrders(allOrders)}
+function filterOrders(orders){
+    if(currentFilter==="active")return orders.filter(o=>["new","oven","change"].includes(o.status));
+    if(currentFilter==="ready")return orders.filter(o=>o.status==="ready");return orders;
+}
+async function fetchOrders(){try{const resp=await fetch("/api/orders");allOrders=await resp.json();renderOrders(allOrders)}catch(e){console.error(e)}}
 
-let updating = false;
-async function updateOrder(btn, id, action) {
-    if (updating) return;
-    updating = true;
-    btn.disabled = true;
-    btn.textContent = "...";
-    try {
-        await fetch(`/api/orders/${id}/${action}`, {method: "POST"});
-        await fetchOrders();
-    } catch (e) {
-        console.error("Failed to update order:", e);
-    } finally {
-        updating = false;
-    }
+let changeOrderId=null;
+function openChangeModal(orderId,customerName){changeOrderId=orderId;document.getElementById("change-modal-title").textContent=`Ändra order #${orderId} (${customerName})`;document.getElementById("change-note-input").value="";document.getElementById("change-modal").classList.add("open");setTimeout(()=>document.getElementById("change-note-input").focus(),100)}
+function closeChangeModal(e){if(e&&e.target!==e.currentTarget)return;document.getElementById("change-modal").classList.remove("open");changeOrderId=null}
+async function submitChangeOrder(){const note=document.getElementById("change-note-input").value.trim();try{await fetch(`/api/orders/${changeOrderId}/change`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({note})});await fetchOrders()}catch(e){console.error(e)}closeChangeModal()}
+
+let ingredientData=[];
+function openIngredientModal(){document.getElementById("ing-modal").classList.add("open");fetchIngredients()}
+function closeIngModal(e){if(e&&e.target!==e.currentTarget)return;document.getElementById("ing-modal").classList.remove("open")}
+async function fetchIngredients(){try{const resp=await fetch("/api/ingredients");ingredientData=await resp.json();renderIngredients()}catch(e){console.error(e)}}
+function renderIngredients(){
+    const el=document.getElementById("ing-list");
+    el.innerHTML=ingredientData.map(ing=>{
+        const cls=ing.available?"ing-toggle on":"ing-toggle off";
+        const label=ing.available?"":" (SLUT)";
+        return `<div class="ing-item"><span><span class="ing-name">${ing.name}${label}</span><span class="ing-count">${ing.pizza_count} pizzor</span></span><button class="${cls}" onclick="toggleIngredient('${ing.name.replace(/'/g,"\\'")}',${ing.available})"></button></div>`;
+    }).join("");
+}
+async function toggleIngredient(name,isAvailable){
+    try{
+        if(isAvailable){await fetch("/api/ingredients/unavailable",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({ingredient:name})})}
+        else{await fetch("/api/ingredients/unavailable",{method:"DELETE",headers:{"Content-Type":"application/json"},body:JSON.stringify({ingredient:name})})}
+        await fetchIngredients();await fetchUnavailable();
+    }catch(e){console.error(e)}
 }
 
-function confirmCancel(btn, id) {
-    if (confirm("Vill du avbeställa denna order? Kunden får ett SMS.")) {
-        updateOrder(btn, id, "cancel");
-    }
-}
-
-let currentFilter = "active";
-let allOrders = [];
-
-function setFilter(f) {
-    currentFilter = f;
-    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-    document.querySelector(`[data-filter="${f}"]`).classList.add("active");
-    renderOrders(allOrders);
-}
-
-function filterOrders(orders) {
-    if (currentFilter === "active") return orders.filter(o => ["new","oven","change"].includes(o.status));
-    if (currentFilter === "ready") return orders.filter(o => o.status === "ready");
-    return orders;
-}
-
-async function fetchOrders() {
-    try {
-        const resp = await fetch("/api/orders");
-        allOrders = await resp.json();
-        renderOrders(allOrders);
-    } catch (e) {
-        console.error("Failed to fetch orders:", e);
-    }
-}
-
-renderMenu();
-fetchOrders();
-setInterval(fetchOrders, 3000);
+fetchUnavailable();renderExtras();fetchOrders();setInterval(fetchOrders,3000);
 </script>
-
 </body>
 </html>
