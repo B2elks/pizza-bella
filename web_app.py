@@ -30,8 +30,9 @@ ELKS_API_PASS = os.getenv("ELKS_API_PASS")
 PIZZA_PHONE = os.getenv("PIZZA_PHONE", "+46766867485")
 BASE_URL = os.getenv("BASE_URL", "https://pizza.skyttberg.nu")
 
-# Token secret for generating phone-based tracking tokens
-TOKEN_SECRET = os.getenv("TOKEN_SECRET", "bellaPizza2026!")
+TOKEN_SECRET = os.getenv("TOKEN_SECRET")
+if not TOKEN_SECRET:
+    raise RuntimeError("TOKEN_SECRET environment variable is required")
 
 
 def phone_to_token(phone):
